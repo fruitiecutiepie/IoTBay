@@ -12,8 +12,7 @@ export default function ResetPassword() {
         setFormStore(prev => ({ ...prev, result: "Password reset link sent" }));
       })
       .catch((err) => {
-        console.log(err.code);
-        console.log(err.message);
+        console.error(`${err.code}: ${err.message}`);
         setFormStore(prev => ({ ...prev, errors: { ...prev.errors, submission: "An error occurred. Please try again." } }));
       });
   }

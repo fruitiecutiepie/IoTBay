@@ -29,8 +29,7 @@ export default function SignUp() {
         navigate('/welcome');
       })
       .catch((err) => {
-        console.log(err.code);
-        console.log(err.message);
+        console.error(`${err.code}: ${err.message}`);
         if (err.code === 'auth/email-already-in-use') {
           setFormStore(prev => ({ ...prev, errors: { ...prev.errors, submission: "Account already exists. Please log in." } }));
         } else {

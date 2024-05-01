@@ -19,8 +19,7 @@ export default function Login() {
         navigate('/welcome');
       })
       .catch((err) => {
-        console.log(err.code)
-        console.log(err.message)
+        console.error(`${err.code}: ${err.message}`);
         setFormStore(prev => ({ ...prev, errors: { ...prev.errors, submission: "Incorrect. Please try again." } }));
       });
   }
