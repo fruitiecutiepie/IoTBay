@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { db } from "../db/initDb";
+import { db } from "../../db/initDb";
 
 type UserSession = {
   uid: string;
@@ -8,7 +8,7 @@ type UserSession = {
   logout_at: number | undefined;
 }
 
-export const userSessionGet = (uid: string): UserSession[] => {
+export const authUserSessionGet = (uid: string): UserSession[] => {
   const query = db.query(
     `SELECT * FROM user_session 
     WHERE uid = $uid;`
@@ -16,7 +16,7 @@ export const userSessionGet = (uid: string): UserSession[] => {
   return query.all({ $uid: uid }) as UserSession[];
 }
 
-export const userSessionInsertLogin = (uid: string): UserSession[] => {
+export const authUserSessionInsertLogin = (uid: string): UserSession[] => {
   const id = nanoid();
   const query = db.query(
     `INSERT INTO user_session (
@@ -30,7 +30,7 @@ export const userSessionInsertLogin = (uid: string): UserSession[] => {
   return query.all({ $uid: uid, $id: id, $login_at: Date.now() }) as UserSession[];
 }
 
-export const userSessionInsertLogout = (uid: string): UserSession[] | void => {
+export const authUserSessionInsertLogout = (uid: string): UserSession[] | void => {
   const lastLoginSession = db.query(
     `SELECT * FROM user_session 
     WHERE uid = $uid 

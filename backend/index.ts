@@ -1,7 +1,7 @@
 import { Server, serve } from "bun";
 
 import { initDb } from "./db/initDb";
-import { userSessionFetchHandler } from "./serviceUserSession/userSessionFetchHandler";
+import { authFetchHandler } from "./serviceAuth/authFetchHandler";
 
 const SERVER_PORT = 46822;
 
@@ -12,7 +12,7 @@ export type FetchHandler = {
 };
 
 const fetchHandlers: FetchHandler = {
-  ...userSessionFetchHandler,
+  ...authFetchHandler,
 };
 
 (() => {

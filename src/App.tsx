@@ -5,7 +5,8 @@ import { routes } from './routes';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { setUser, userSignal } from './common/userSignal';
 import { auth } from './common/firebaseClientInit';
-import { fetchUserSessionInsertLogout } from './backendService/serviceUser';
+import { fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession';
+import { fetchAuthUserDelete, fetchAuthUserInsertOrUpdate } from './serviceAuth/authUser';
 
 const App: Component = () => {
   const Route = useRoutes(routes);
@@ -24,9 +25,16 @@ const App: Component = () => {
 
   const unsub = onAuthStateChanged(auth, async (user) => {
     if (user) {
+      await fetchAuthUserInsertOrUpdate({
+        uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        email_verified: user.emailVerified,
+      });
       setUser(user);
     } else {
-      await fetchUserSessionInsertLogout(userSignal().uid);
+      await fetchAuthUserSessionInsertLogout(userSignal().uid);
+      await fetchAuthUserDelete();
       setUser(null);
     }
   });

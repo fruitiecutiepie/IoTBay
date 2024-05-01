@@ -1,36 +1,36 @@
-import { FetchHandler } from "..";
-import { userSessionInsertLogin, userSessionInsertLogout, userSessionGet } from "./userSessionModel";
+import { FetchHandler } from "../..";
+import { authUserSessionInsertLogin, authUserSessionInsertLogout, authUserSessionGet } from "../sql/authUserSession";
 
-type UserSessionReqBody = {
+type ReqBody = {
   uid: string;
   event: "login" | "logout";
 }
 
-export const userSessionFetchHandler: FetchHandler = {
-  "/user_sessions": {
+export const authUserSessionFetchHandler: FetchHandler = {
+  "/auth/user_sessions": {
     GET: async (req: Request, headers: Headers) => {
       const url = new URL(req.url);
       const uid = url.searchParams.get("uid");
       if (!uid) {
-        console.error(`/user_sessions: uid is required`);
+        console.error(`/auth/user_sessions: uid is required`);
         return Promise.resolve(
           new Response(undefined, { status: 400, headers })
         )
       }
-      const userSessions = userSessionGet(uid);
+      const userSessions = authUserSessionGet(uid);
       
       return Promise.resolve(
         new Response(JSON.stringify(userSessions), { status: 200, headers })
       );
     },
     POST: async (req: Request, headers: Headers) => {
-      const reqBody = await req.json() as UserSessionReqBody;
+      const reqBody = await req.json() as ReqBody;
       const uid = reqBody.uid;
       
       if (reqBody.event === "login") {
-        userSessionInsertLogin(uid);
+        authUserSessionInsertLogin(uid);
       } else if (reqBody.event === "logout") {
-        userSessionInsertLogout(uid);
+        authUserSessionInsertLogout(uid);
       }
 
       return Promise.resolve(

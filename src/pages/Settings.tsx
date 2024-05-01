@@ -3,13 +3,13 @@ import { createStore } from "solid-js/store";
 import { A, useNavigate } from '@solidjs/router';
 import { For, createEffect, onMount } from 'solid-js';
 
-import { UserSession } from '../../backend/serviceUserSession/userSessionModel';
-
 import { userSignal } from '../common/userSignal';
-import { fetchUserSessionGet } from '../backendService/serviceUser';
+import { UserSession } from '../../dataTypes';
+import { fetchAuthUserSessionGet } from '../serviceAuth/authUserSession';
 
 type SettingsStore = {
   user: {
+    uid: string | undefined;
     name: string | undefined;
     email: string | undefined;
     emailVerified: boolean | undefined;
@@ -19,6 +19,7 @@ type SettingsStore = {
 
 const defaultSettingsStore: SettingsStore = {
   user: {
+    uid: undefined,
     name: undefined,
     email: undefined,
     emailVerified: undefined,
@@ -26,10 +27,11 @@ const defaultSettingsStore: SettingsStore = {
   userSessions: undefined,
 }
 
+
 export default function Settings() {
   const navigate = useNavigate();
   const [configStore, setConfigStore] = createStore(defaultSettingsStore);
-
+  
   const updateUserProfile = async () => {
     updateProfile(userSignal(), {
       displayName: configStore.user.name,
@@ -57,20 +59,19 @@ export default function Settings() {
     }
   }
 
-  const fetchUserSession = async () => {
-    const userSession = await fetchUserSessionGet(userSignal().uid);
+  const fetchUserSessions = async (uid: string) => {
+    const userSession = await fetchAuthUserSessionGet(uid);
     setConfigStore('userSessions', userSession);
   }
-
-  onMount(() => {
-    fetchUserSession();
-    if (userSignal()) {
-      setConfigStore('user', {
-        name: userSignal().displayName,
-        email: userSignal().email,
-        emailVerified: userSignal().emailVerified,
-      });
-    }
+  
+  createEffect(() => {
+    setConfigStore('user', {
+      uid: userSignal().uid,
+      name: userSignal().displayName,
+      email: userSignal().email,
+      emailVerified: userSignal().emailVerified,
+    });
+    fetchUserSessions(configStore.user.uid);
   });
 
   return (
@@ -179,7 +180,7 @@ export default function Settings() {
           class="flex flex-col items-center justify-center w-full"
         >
           <h1
-            class="text-2xl font-bold"
+            class="text-2xl font-bold py-5"
           >
             Active Sessions
           </h1>
@@ -203,10 +204,10 @@ export default function Settings() {
                   >
                     {(session, index) => (
                       <div
-                        class="grid grid-cols-7 items-center w-full border-b border-gray-300 py-2"
+                        class="grid grid-cols-7 items-center justify-center w-full border-b border-gray-300 py-2"
                       >
                         <div
-                          class="grid grid-cols-2 col-span-5 bg-slate-300 items-center justify-center w-full"
+                          class="grid grid-cols-2 col-span-5 items-center justify-center w-full"
                         >
                           <p>
                             Logged in at: {new Date(session.login_at).toLocaleString()}
