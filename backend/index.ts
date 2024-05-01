@@ -3,7 +3,7 @@ import { Server, serve } from "bun";
 import { initDb } from "./db/initDb";
 import { userSessionFetchHandler } from "./serviceUserSession/userSessionFetchHandler";
 
-export const SERVER_PORT = 46822;
+const SERVER_PORT = 46822;
 
 export type FetchHandler = {
   [route: string]: {

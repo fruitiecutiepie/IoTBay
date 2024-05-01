@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { db } from "../db/initDb";
 
-export type UserSession = {
+type UserSession = {
   uid: string;
   id: string;
   login_at: number;

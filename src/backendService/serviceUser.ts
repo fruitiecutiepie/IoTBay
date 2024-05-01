@@ -1,14 +1,18 @@
-import { SERVER_PORT } from "../../backend";
-import { UserSession } from "../../backend/serviceUserSession/userSessionModel";
-import { UserSessionReqBody } from "../../backend/serviceUserSession/userSessionFetchHandler";
+import config from "../../config.json";
+import { UserSession } from "../../dataTypes";
+
+type UserSessionReqBody = {
+  uid: string;
+  event: "login" | "logout";
+}
 
 export const fetchUserSessionGet = async (uid: string): Promise<UserSession> => {
-  const res = await fetch(`http://localhost:${SERVER_PORT}/user_sessions?uid=${uid}`);
+  const res = await fetch(`http://localhost:${config.serverPort}/user_sessions?uid=${uid}`);
   return await res.json();
 }
 
 export const fetchUserSessionInsertLogin = async (uid: string): Promise<void> => {
-  await fetch(`http://localhost:${SERVER_PORT}/user_sessions`, {
+  await fetch(`http://localhost:${config.serverPort}/user_sessions`, {
     method: 'POST',
     body: JSON.stringify({
       uid,
@@ -18,7 +22,7 @@ export const fetchUserSessionInsertLogin = async (uid: string): Promise<void> =>
 }
 
 export const fetchUserSessionInsertLogout = async (uid: string): Promise<void> => {
-  await fetch(`http://localhost:${SERVER_PORT}/user_sessions`, {
+  await fetch(`http://localhost:${config.serverPort}/user_sessions`, {
     method: 'POST',
     body: JSON.stringify({
       uid,

@@ -1,7 +1,7 @@
 import { FetchHandler } from "..";
 import { userSessionInsertLogin, userSessionInsertLogout, userSessionGet } from "./userSessionModel";
 
-export type UserSessionReqBody = {
+type UserSessionReqBody = {
   uid: string;
   event: "login" | "logout";
 }
@@ -12,8 +12,9 @@ export const userSessionFetchHandler: FetchHandler = {
       const url = new URL(req.url);
       const uid = url.searchParams.get("uid");
       if (!uid) {
+        console.error(`/user_sessions: uid is required`);
         return Promise.resolve(
-          new Response(JSON.stringify({ error: "uid is required" }), { status: 400, headers })
+          new Response(undefined, { status: 400, headers })
         )
       }
       const userSessions = userSessionGet(uid);
@@ -23,12 +24,12 @@ export const userSessionFetchHandler: FetchHandler = {
       );
     },
     POST: async (req: Request, headers: Headers) => {
-      const res = await req.json() as UserSessionReqBody;
-      const uid = res.uid;
+      const reqBody = await req.json() as UserSessionReqBody;
+      const uid = reqBody.uid;
       
-      if (res.event === "login") {
+      if (reqBody.event === "login") {
         userSessionInsertLogin(uid);
-      } else if (res.event === "logout") {
+      } else if (reqBody.event === "logout") {
         userSessionInsertLogout(uid);
       }
 
