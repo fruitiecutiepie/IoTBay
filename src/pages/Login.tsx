@@ -1,8 +1,10 @@
 import { A, useNavigate } from "@solidjs/router";
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../common/firebaseClientInit'
 
+import { auth } from '../common/firebaseClientInit'
 import useFormStore from "../common/useFormStore";
+
+import { fetchUserSessionInsertLogin } from "../backendService/serviceUser";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,9 +12,10 @@ export default function Login() {
   
   const signIn = () => {
     signInWithEmailAndPassword(auth, formStore.fields.email, formStore.fields.password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
-        console.log(user)
+
+        await fetchUserSessionInsertLogin(user.uid);
         navigate('/welcome');
       })
       .catch((err) => {

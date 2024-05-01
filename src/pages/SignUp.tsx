@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } 
 import { auth } from '../common/firebaseClientInit'
 
 import useFormStore from "../common/useFormStore";
+import { fetchUserSessionInsertLogin } from "../backendService/serviceUser";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -16,9 +17,10 @@ export default function SignUp() {
   
   const signUp = () => {
     createUserWithEmailAndPassword(auth, formStore.fields.email, formStore.fields.password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
-
+        
+        await fetchUserSessionInsertLogin(user.uid);
         updateProfile(user, {
           displayName: formStore.fields.name,
         });

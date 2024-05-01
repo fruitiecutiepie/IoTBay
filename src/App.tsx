@@ -1,10 +1,11 @@
-import { onCleanup, type Component, onMount } from 'solid-js';
+import { onCleanup, type Component } from 'solid-js';
 import { Link, useNavigate, useRoutes } from '@solidjs/router';
 
 import { routes } from './routes';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { setUser, user } from './common/userSignal';
+import { setUser, userSignal } from './common/userSignal';
 import { auth } from './common/firebaseClientInit';
+import { fetchUserSessionInsertLogout } from './backendService/serviceUser';
 
 const App: Component = () => {
   const Route = useRoutes(routes);
@@ -21,15 +22,12 @@ const App: Component = () => {
       });
   }
 
-  const unsub = onAuthStateChanged(auth, (user) => {
+  const unsub = onAuthStateChanged(auth, async (user) => {
     if (user) {
       setUser(user);
-      console.log('User is signed in');
-      console.log(user);
     } else {
+      await fetchUserSessionInsertLogout(userSignal().uid);
       setUser(null);
-      console.log('User is signed out');
-      console.log(user);
     }
   });
 
@@ -51,7 +49,12 @@ const App: Component = () => {
           <div
             class="flex items-center"
           >
-            {user()
+            <li class="py-2 px-4">
+                {/* <Link href="/test" class="no-underline hover:underline">
+                  Test
+                </Link> */}
+              </li>
+            {userSignal()
               ? (
                 <>
                   <li class="py-2 px-4">
