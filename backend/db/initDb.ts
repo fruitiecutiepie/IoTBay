@@ -1,6 +1,6 @@
 import { Database } from "bun:sqlite";
 
-import { authInit } from "../serviceAuth/authInit";
+import { authInitDb } from "../serviceAuth/authInitDb";
 
 const DB_NAME = "iotbay.db";
 export const db = new Database(`./db/${DB_NAME}`);
@@ -11,5 +11,5 @@ export const initDb = () => {
     `PRAGMA journal_mode = WAL;`
   );
 
-  authInit();
+  authInitDb();
 }

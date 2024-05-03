@@ -1,6 +1,6 @@
 import { db } from "../db/initDb";
 
-export const authInit = () => {
+export const authInitDb = () => {
   db.exec(
     `CREATE TABLE IF NOT EXISTS user (
       uid TEXT NOT NULL PRIMARY KEY, 
