@@ -43,7 +43,7 @@ export default function SignUp() {
       class="flex flex-col pt-5 px-5 pb-safe"
     >
       <h1
-        class="font-display font-bold text-2xl text-center mb-4"
+        class="font-bold text-3xl text-center mb-4"
       >
         Register for IoTBay
       </h1>
@@ -132,7 +132,7 @@ export default function SignUp() {
             <button type="submit"
               onClick={signUp}
               disabled={hasFormErrors()}
-              class="flex items-center justify-center rounded-full text-white font-display bg-indigo-500 w-full my-4 py-3 disabled:bg-indigo-300 hover:bg-indigo-600 transition duration-300"
+              class="flex items-center justify-center rounded-full text-white bg-indigo-500 w-full my-4 py-3 disabled:bg-indigo-300 hover:bg-indigo-600 transition duration-300"
             >
               Sign Up
             </button>
@@ -145,7 +145,7 @@ export default function SignUp() {
               >
                 Already a user? 
                 <A href="/login"
-                  class="text-indigo-500"
+                  class="text-indigo-500 hover:underline"
                 >
                   Log in
                 </A>

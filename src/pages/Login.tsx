@@ -29,7 +29,7 @@ export default function Login() {
       class="flex flex-col pt-5 px-5 pb-safe"
     >
       <h1
-        class="font-display font-bold text-2xl text-center mb-4"
+        class="font-bold text-3xl text-center mb-4"
       >
         Welcome to IoTBay
       </h1>
@@ -59,7 +59,12 @@ export default function Login() {
               />
             </div>
             {formStore.errors.submission && <div class="text-sm mt-2 text-red-500">{formStore.errors.submission}</div>}
-            <A href="/forgot" class="text-sm mt-2 self-end text-indigo-500">Forgot password?</A>
+            <A
+              href="/forgot"
+              class="text-sm mt-2 self-end text-indigo-500 hover:underline transition duration-300"
+            >
+              Forgot password?
+            </A>
           </div>
           <div 
             class="flex flex-col items-center"
@@ -67,7 +72,7 @@ export default function Login() {
             <button type="submit"
               onClick={signIn}
               disabled={!formStore.fields.email || !formStore.fields.password}
-              class="flex items-center justify-center rounded-full text-white font-display bg-indigo-500 w-full my-4 py-3 disabled:bg-indigo-300 hover:bg-indigo-600 transition duration-300"
+              class="flex items-center justify-center rounded-full text-white bg-indigo-500 w-full my-4 py-3 disabled:bg-indigo-300 hover:bg-indigo-600 transition duration-300"
             >
               Log In
             </button>
@@ -80,7 +85,7 @@ export default function Login() {
             >
               Not a user yet? 
               <A href="/signup"
-                class="text-indigo-500"
+                class="text-indigo-500 hover:underline transition duration-300"
               >
                 Create an account
               </A>

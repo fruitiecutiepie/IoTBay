@@ -22,7 +22,7 @@ export default function ResetPassword() {
       class="flex flex-col pt-5 px-5 pb-safe"
     >
       <h1
-        class="font-display font-bold text-2xl text-center mb-2"
+        class="font-bold text-3xl text-center mb-2"
       >
         Reset Password
       </h1>
@@ -59,7 +59,7 @@ export default function ResetPassword() {
             <button type="submit"
               onClick={resetPassword}
               disabled={!formStore.fields.email || !!formStore.errors.email}
-              class="flex items-center justify-center rounded-full text-white font-display bg-indigo-500 w-full my-4 py-3 disabled:bg-indigo-300 hover:bg-indigo-600 transition duration-300"
+              class="flex items-center justify-center rounded-full text-white bg-indigo-500 w-full my-4 py-3 disabled:bg-indigo-300 hover:bg-indigo-600 transition duration-300"
               >
               Send password reset link
             </button>
