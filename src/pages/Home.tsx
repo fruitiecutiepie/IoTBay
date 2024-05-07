@@ -1,41 +1,55 @@
-import { Show } from 'solid-js';
-import { userSignal } from '../common/userSignal';
+import { Show, onMount } from 'solid-js';
+import { User } from '../../dataTypes';
+import { createStore } from 'solid-js/store';
+import { fetchAuthUserGet } from '../serviceAuth/authUser';
+
+type HomeStore = {
+  user: User | undefined;
+}
+
+const defaultHomeStore: HomeStore = {
+  user: undefined,
+}
 
 export default function Home() {
+  const [configStore, setConfigStore] = createStore(defaultHomeStore);
+
+  onMount(async () => {
+    const user = await fetchAuthUserGet();
+    setConfigStore('user', user);
+  });
+
   return (
     <div
       class="text-gray-700 p-8 flex flex-col justify-center items-center"
     >
-      <Show when={userSignal()}
+      <Show when={configStore.user}
         fallback={
           <div
             class="flex flex-col items-center w-full"
           >
             <h1
-              class="text-2xl font-bold"
+              class="text-3xl font-bold"
             >
-              Hello Guest!
+              Hello, Guest!
             </h1>
-            <p class="mt-4">
-              This is the homepage. You are not logged in.
+            <p class="text-sm mt-4">
+              Welcome to the homepage. You are not logged in.
             </p>
           </div>
         }
       >
         <div
-          class="flex flex-col items-center w-full"
+          class="flex flex-col justify-center items-center w-full"
         >
           <h1
-            class="text-2xl font-bold"
+            class="text-3xl font-bold"
           >
-            Hello {userSignal().displayName}!
+            Hello, {configStore.user.name}!
           </h1>
-          <p
-            class="mt-4"
-          >
-            This is the homepage. You are logged in.
+          <p class="text-sm mt-4">
+            Welcome to the homepage. You are logged in.
           </p>
-          
         </div>
       </Show>
     </div>

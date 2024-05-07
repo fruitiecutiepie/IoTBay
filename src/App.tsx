@@ -1,16 +1,28 @@
-import { onCleanup, type Component } from 'solid-js';
+import { onCleanup, onMount, type Component } from 'solid-js';
 import { Link, useNavigate, useRoutes } from '@solidjs/router';
 
 import { routes } from './routes';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { setUser, userSignal } from './common/userSignal';
+import { setUser } from './common/userSignal';
 import { auth } from './common/firebaseClientInit';
 import { fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession';
-import { fetchAuthUserDelete, fetchAuthUserInsertOrUpdate } from './serviceAuth/authUser';
+import { fetchAuthUserDelete, fetchAuthUserGet, fetchAuthUserInsertOrUpdate } from './serviceAuth/authUser';
+import { User } from '../dataTypes';
+import { createStore } from 'solid-js/store';
+
+type AppStore = {
+  user: User | undefined;
+}
+
+const defaultAppStore: AppStore = {
+  user: undefined,
+}
 
 const App: Component = () => {
   const Route = useRoutes(routes);
   const navigate = useNavigate();
+
+  const [configStore, setConfigStore] = createStore(defaultAppStore);
 
   const logOut = () => {
     signOut(auth)
@@ -33,10 +45,15 @@ const App: Component = () => {
       });
       setUser(user);
     } else {
-      await fetchAuthUserSessionInsertLogout(userSignal().uid);
+      await fetchAuthUserSessionInsertLogout(configStore.user.uid);
       await fetchAuthUserDelete();
       setUser(null);
     }
+  });
+
+  onMount(async () => {
+    const user = await fetchAuthUserGet();
+    setConfigStore('user', user);
   });
 
   onCleanup(() => {
@@ -45,11 +62,19 @@ const App: Component = () => {
 
   return (
     <>
-      <nav class="text-gray-900 px-4 pt-3">
-        <ul class="flex items-center justify-between">
+      <nav
+        class="text-gray-900 px-7 pt-5"
+      >
+        <ul
+          class="flex items-center justify-between"
+        >
           <div>
-            <Link href="/" class="no-underline hover:underline">
-              <h1 class="font-display font-bold text-4xl">
+            <Link
+              href="/"
+            >
+              <h1
+                class="font-bold font-serif text-3xl hover:text-indigo-600"
+              >
                 IoTBay
               </h1>
             </Link>
@@ -57,12 +82,14 @@ const App: Component = () => {
           <div
             class="flex items-center"
           >
-            <li class="py-2 px-4">
+            <li
+              class="py-2 px-4"
+            >
                 {/* <Link href="/test" class="no-underline hover:underline">
                   Test
                 </Link> */}
               </li>
-            {userSignal()
+            {configStore.user
               ? (
                 <>
                   <li class="py-2 px-4">
@@ -72,6 +99,7 @@ const App: Component = () => {
                   </li>
                   <li class="py-2 px-4">
                     <button type="submit"
+                      class="no-underline hover:underline"
                       onClick={logOut}
                     >
                       Log Out
