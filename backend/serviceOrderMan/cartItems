@@ -1,0 +1,30 @@
+
+const cartItemsData = [
+  { id: 1, name: "Product 1", price: 20, image: "product1.jpg" },
+  { id: 2, name: "Product 2", price: 30, image: "product2.jpg" },
+  { id: 3, name: "Product 3", price: 25, image: "product3.jpg" },
+];
+
+// Function to fetch cart items
+export const fetchCartItems = async () => {
+  // Simulate fetching data from a server
+  // You can replace this with an actual API call
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(cartItemsData);
+    },); 
+  });
+};
+
+// Function to delete a cart item by ID
+export const deleteCartItem = async (itemId) => {
+  // Simulate deleting item from server
+  // You can replace this with an actual API call
+  return new Promise(resolve => {
+    setTimeout(() => {
+      // Filter out the item with the specified ID
+      cartItemsData = cartItemsData.filter(item => item.id !== itemId);
+      resolve(); // Resolve once deletion is done
+    },); 
+  });
+};

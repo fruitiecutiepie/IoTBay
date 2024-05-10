@@ -62,58 +62,51 @@ const App: Component = () => {
 
   return (
     <>
-      <nav
-        class="text-gray-900 px-7 pt-5"
-      >
-        <ul
-          class="flex items-center justify-between"
-        >
+      <nav class="text-gray-900 px-7 pt-5">
+        <ul class="flex items-center justify-between">
           <div>
-            <Link
-              href="/"
-            >
-              <h1
-                class="font-bold font-serif text-3xl hover:text-indigo-600"
-              >
+            <Link href="/">
+              <h1 class="font-bold font-serif text-3xl hover:text-indigo-600">
                 IoTBay
               </h1>
             </Link>
           </div>
-          <div
-            class="flex items-center"
-          >
-            <li
-              class="py-2 px-4"
-            >
-                {/* <Link href="/test" class="no-underline hover:underline">
-                  Test
-                </Link> */}
-              </li>
-            {configStore.user
-              ? (
-                <>
-                  <li class="py-2 px-4">
-                    <Link href="/settings" class="no-underline hover:underline">
-                      Settings
-                    </Link>
-                  </li>
-                  <li class="py-2 px-4">
-                    <button type="submit"
-                      class="no-underline hover:underline"
-                      onClick={logOut}
-                    >
-                      Log Out
-                    </button>
-                  </li>
-                </>
-              )
-              :
+          <div class="flex items-center">
+            <div class="relative">
+            <Link href="/cart" class="px-4 py-2">
+              <span class="flex items-center">
+                <span class="mr-1 no-underline hover:underline">Cart</span>
+                <span class="bg-red-500 text-white rounded-full text-xs px-1">
+                  {/* {cartItems()} */}
+                </span>
+              </span>
+            </Link>
+
+            </div>
+            {configStore.user ? (
+              <>
+                <li class="py-2 px-4">
+                  <Link href="/settings" class="no-underline hover:underline">
+                    Settings
+                  </Link>
+                </li>
+                <li class="py-2 px-4">
+                  <button
+                    type="submit"
+                    class="no-underline hover:underline"
+                    onClick={logOut}
+                  >
+                    Log Out
+                  </button>
+                </li>
+              </>
+            ) : (
               <li class="py-2 px-4">
                 <Link href="/login" class="no-underline hover:underline">
                   Login
                 </Link>
               </li>
-            }
+            )}
           </div>
         </ul>
       </nav>
