@@ -5,6 +5,7 @@ import { auth } from '../common/firebaseClientInit'
 import useFormStore from "../common/useFormStore";
 
 import { fetchAuthUserSessionInsertLogin } from "../serviceAuth/authUserSession";
+import { fetchStaffUIDAuth } from "../serviceAdmin/staffUID";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,7 +17,17 @@ export default function Login() {
         const user = userCredential.user;
 
         await fetchAuthUserSessionInsertLogin(user.uid);
-        navigate('/welcome');
+
+        // Andrew's code start.
+        const isSysAdmin: boolean = await fetchStaffUIDAuth(user.uid, true);
+        if (isSysAdmin) {
+          navigate('/admin');
+        }
+        else {
+          navigate('/welcome');
+        }
+        // Andrew's code end.
+        
       })
       .catch((err) => {
         console.error(`${err.code}: ${err.message}`);
