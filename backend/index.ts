@@ -2,7 +2,7 @@ import { Server, serve } from "bun";
 
 import { initDb } from "./db/initDb";
 import { authFetchHandler } from "./serviceAuth/authFetchHandler";
-import { staffFetchHandler } from "./serviceAdmin/staffUIDFetchHandler";
+import { staffFetchHandler } from "./serviceAdmin/staffFetchHandler";
 
 const SERVER_PORT = 46822;
 

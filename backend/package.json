@@ -10,7 +10,11 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "firebase-admin": "^12.1.0",
     "jsonwebtoken": "^9.0.2",
     "nanoid": "^5.0.7"
-  }
+  },
+  "trustedDependencies": [
+    "protobufjs"
+  ]
 }
