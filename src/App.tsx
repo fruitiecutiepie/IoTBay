@@ -9,13 +9,16 @@ import { fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession'
 import { fetchAuthUserDelete, fetchAuthUserGet, fetchAuthUserInsertOrUpdate } from './serviceAuth/authUser';
 import { User } from '../dataTypes';
 import { createStore } from 'solid-js/store';
+import { fetchStaffUIDAuth } from './serviceAdmin/staffUID'; // Andrew's Code
 
 type AppStore = {
   user: User | undefined;
+  userStaffType: string | undefined; // Andrew's code
 }
 
 const defaultAppStore: AppStore = {
   user: undefined,
+  userStaffType: undefined // Andrew's code
 }
 
 const App: Component = () => {
@@ -54,6 +57,23 @@ const App: Component = () => {
   onMount(async () => {
     const user = await fetchAuthUserGet();
     setConfigStore('user', user);
+
+    // Andrew's code start.
+    const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, false);
+    const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, true);
+
+    if (isAdmin) {
+      setConfigStore('userStaffType', "Admin");
+    }
+    if (isSysAdmin) {
+      setConfigStore('userStaffType', "SysAdmin");
+    }
+    else {
+      setConfigStore('userStaffType', "User");
+    }
+
+    console.log(configStore.userStaffType);
+    // Andrew's code end.
   });
 
   onCleanup(() => {
@@ -89,8 +109,18 @@ const App: Component = () => {
                   Test
                 </Link> */}
               </li>
-            {configStore.user
-              ? (
+            {/* Andrew's code start. */}
+            { configStore.userStaffType==="Admin" || configStore.userStaffType==="SysAdmin" ? (
+                <>
+                  <li class="py-2 px-4">
+                    <Link href="/admin" class="no-underline hover:underline">
+                      Admin
+                    </Link>
+                  </li>
+                </>
+              // Andrew's code end.
+              ) :
+              configStore.user ? (
                 <>
                   <li class="py-2 px-4">
                     <Link href="/settings" class="no-underline hover:underline">
@@ -106,8 +136,7 @@ const App: Component = () => {
                     </button>
                   </li>
                 </>
-              )
-              :
+              ) :
               <li class="py-2 px-4">
                 <Link href="/login" class="no-underline hover:underline">
                   Login

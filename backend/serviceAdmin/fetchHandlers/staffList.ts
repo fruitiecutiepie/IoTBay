@@ -1,7 +1,7 @@
 import { FetchHandler } from "../..";
 import { getAllUsers } from "../../common/firebaseAdminInit";
 import { User } from "../../serviceAuth/sql/authUser";
-import { checkUID } from "../sql/staffUID";
+import { checkSysAdminUID, checkUID } from "../sql/staffUID";
   
 export const userListFetchHandler: FetchHandler = {
   "/auth/fb": {
@@ -22,6 +22,11 @@ export const userListFetchHandler: FetchHandler = {
           new Response(JSON.stringify(filterStaff(allUsers)), { status: 200, headers })
         );
       }
+      else if (filter === "all") { // For testing. Remove later.
+        return Promise.resolve(
+          new Response(JSON.stringify(allUsers), { status: 200, headers })
+        );
+      }
       else {
         return Promise.resolve(
           new Response(undefined, { status: 400, headers })
@@ -34,7 +39,7 @@ export const userListFetchHandler: FetchHandler = {
 const filterStaff = (users: User[]): User[] => {
   var staffList: User[] = new Array;
   users.forEach(user => {
-    if (checkUID(user.uid))
+    if (checkUID(user.uid) && !checkSysAdminUID(user.uid)) // The sysadmin account should not be so visible.
       staffList.push(user);
   });
 

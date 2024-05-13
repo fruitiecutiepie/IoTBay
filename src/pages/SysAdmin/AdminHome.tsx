@@ -1,36 +1,53 @@
 import { A, useNavigate } from "@solidjs/router";
-import { Show, onMount } from 'solid-js';
+import { For, Show, onMount } from 'solid-js';
 import { User } from '../../../dataTypes';
 import { createStore } from 'solid-js/store';
 import { fetchAuthUserGet } from '../../serviceAuth/authUser';
 import { fetchStaffUIDAuth } from "../../serviceAdmin/staffUID";
+import { fetchUserList } from "../../serviceAdmin/staffList";
 
 type AdminHomeStore = {
   user: User | undefined;
+  userStaffType: string | undefined;
+  staffList: User[] | undefined;
 }
 
 const defaultAdminHomeStore: AdminHomeStore = {
-  user: undefined
+  user: undefined,
+  userStaffType: undefined,
+  staffList: undefined
 }
 
 export default function AdminHome() {
   const [configStore, setConfigStore] = createStore(defaultAdminHomeStore);
-  var isAdmin: boolean = false;
-  var isSysAdmin: boolean = false;
 
   onMount(async () => {
     const user = await fetchAuthUserGet();
     setConfigStore('user', user);
 
-    isAdmin = await fetchStaffUIDAuth(configStore.user.uid, false);
-    isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, true);
+    const staffList = await fetchUserList("all");
+    setConfigStore('staffList', staffList);
+
+    const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, false);
+    const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, true);
+
+    if (isAdmin) {
+      setConfigStore('userStaffType', "Admin");
+    }
+    if (isSysAdmin) {
+      setConfigStore('userStaffType', "SysAdmin");
+    }
+    else {
+      setConfigStore('userStaffType', "User");
+    }
+
   });
 
   return (
     <div class="text-gray-700 p-8 flex flex-col justify-center items-center">
-      <Show when={isAdmin}
+      <Show when={configStore.userStaffType === "Admin"}
         fallback={
-          <Show when={isSysAdmin}
+          <Show when={configStore.userStaffType === "SysAdmin"}
             fallback={
               /* The user is an admin but not a SysAdmin */
               <div>
@@ -40,7 +57,13 @@ export default function AdminHome() {
           >
             {/* The user is a SysAdmin */}
             <div>
-
+              <ul>
+                <For each={configStore.staffList} fallback={<div>Loading...</div>}>
+                  {(user, index) => (
+                    <li>{user.name}</li>
+                  )}
+                </For>
+              </ul>
             </div>
           </Show>
         }
