@@ -28,8 +28,8 @@ export default function AdminHome() {
     const staffList = await fetchUserList("all");
     setConfigStore('staffList', staffList);
 
-    const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, false);
-    const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, true);
+    const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, "Admin");
+    const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, "SysAdmin");
 
     if (isAdmin) {
       setConfigStore('userStaffType', "Admin");
@@ -45,36 +45,28 @@ export default function AdminHome() {
 
   return (
     <div class="text-gray-700 p-8 flex flex-col justify-center items-center">
-      <Show when={configStore.userStaffType === "Admin"}
-        fallback={
-          <Show when={configStore.userStaffType === "SysAdmin"}
-            fallback={
-              /* The user is an admin but not a SysAdmin */
-              <div>
-
-              </div>
-            }
-          >
-            {/* The user is a SysAdmin */}
-            <div>
-              <ul>
-                <For each={configStore.staffList} fallback={<div>Loading...</div>}>
-                  {(user, index) => (
-                    <li>{user.name}</li>
-                  )}
-                </For>
-              </ul>
-            </div>
-          </Show>
-        }
-      >
-        {/* The user is not an admin or SysAdmin */}
+      {
+        configStore.userStaffType==="SysAdmin" ? (
+          <div>
+            <ul>
+              <For each={configStore.staffList} fallback={<div>Loading...</div>}>
+                {(user, index) => (
+                  <li>{user.name}</li>
+                )}
+              </For>
+            </ul>
+          </div>
+        ) :
+        configStore.userStaffType==="Admin" ? (
+          <>
+          </>
+        ) :
         <div class="flex flex-col justify-center items-center w-full">
           <h1 class="text-3xl font-bold">
             You are not authorised to view this page.
           </h1>
         </div>
-      </Show>
+      }
     </div>
   )
 }

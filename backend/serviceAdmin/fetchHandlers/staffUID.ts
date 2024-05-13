@@ -11,7 +11,7 @@ export const staffUIDFetchHandler: FetchHandler = {
     GET: async (req: Request, headers: Headers) => {
       const url = new URL(req.url);
       const uid = url.searchParams.get("uid");
-      const checkSysAdmin = url.searchParams.get("checkSysAdmin");
+      const toCheck = url.searchParams.get("toCheck");
       
       if (!uid) {
         console.error(`/auth/staff: uid is required`);
@@ -20,12 +20,12 @@ export const staffUIDFetchHandler: FetchHandler = {
         )
       }
 
-      if (checkSysAdmin === "false") {
+      if (toCheck === "Admin") {
         return Promise.resolve(
           new Response(JSON.stringify(checkUID(uid)), { status: 200, headers })
         ); 
       }
-      else if (checkSysAdmin === "true") {
+      else if (toCheck === "SysAdmin") {
         return Promise.resolve(
           new Response(JSON.stringify(checkSysAdminUID(uid)), { status: 200, headers })
         ); 

@@ -18,16 +18,7 @@ export default function Login() {
 
         await fetchAuthUserSessionInsertLogin(user.uid);
 
-        // Andrew's code start.
-        const isSysAdmin: boolean = await fetchStaffUIDAuth(user.uid, true);
-        if (isSysAdmin) {
-          navigate('/admin');
-        }
-        else {
-          navigate('/welcome');
-        }
-        // Andrew's code end.
-        
+        navigate('/welcome');
       })
       .catch((err) => {
         console.error(`${err.code}: ${err.message}`);

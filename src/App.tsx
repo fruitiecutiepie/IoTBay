@@ -59,8 +59,8 @@ const App: Component = () => {
     setConfigStore('user', user);
 
     // Andrew's code start.
-    const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, false);
-    const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, true);
+    const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, "Admin");
+    const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, "SysAdmin");
 
     if (isAdmin) {
       setConfigStore('userStaffType', "Admin");
@@ -116,6 +116,14 @@ const App: Component = () => {
                     <Link href="/admin" class="no-underline hover:underline">
                       Admin
                     </Link>
+                  </li>
+                  <li class="py-2 px-4">
+                    <button type="submit"
+                      class="no-underline hover:underline"
+                      onClick={logOut}
+                    >
+                      Log Out
+                    </button>
                   </li>
                 </>
               // Andrew's code end.
