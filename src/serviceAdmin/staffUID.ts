@@ -11,8 +11,8 @@ export const fetchStaffUIDGet = async (uid: string): Promise<StaffUID> => {
   return await res.json();
 }
 
-export const fetchStaffUIDAuth = async (uid: string, event: string): Promise<boolean> => {
-  const res = await fetch(`http://localhost:${config.serverPort}/auth/staff?uid=${uid}&event=${event}`);
+export const fetchStaffUIDAuth = async (uid: string, checkSysAdmin: boolean): Promise<boolean> => {
+  const res = await fetch(`http://localhost:${config.serverPort}/auth/staff?uid=${uid}&checkSysAdmin=${checkSysAdmin}`);
   return await res.json();
 }
 

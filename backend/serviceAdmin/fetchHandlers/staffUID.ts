@@ -5,12 +5,12 @@ import { checkUID, checkSysAdminUID, staffUIDDelete, staffUIDGet, staffUIDInsert
     event: "add" | "delete";
   }
   
-  export const authUserSessionFetchHandler: FetchHandler = {
+  export const staffUIDFetchHandler: FetchHandler = {
     "/auth/staff": {
       GET: async (req: Request, headers: Headers) => {
         const url = new URL(req.url);
         const uid = url.searchParams.get("uid");
-        const event = url.searchParams.get("event");
+        const checkSysAdmin = url.searchParams.get("checkSysAdmin");
         
         if (!uid) {
           console.error(`/auth/staff: uid is required`);
@@ -19,12 +19,12 @@ import { checkUID, checkSysAdminUID, staffUIDDelete, staffUIDGet, staffUIDInsert
           )
         }
 
-        if (event === "authStaff") {
+        if (checkSysAdmin === "false") {
           return Promise.resolve(
             new Response(JSON.stringify(checkUID(uid)), { status: 200, headers })
           ); 
         }
-        else if (event === "authSysAdmin") {
+        else if (checkSysAdmin === "true") {
           return Promise.resolve(
             new Response(JSON.stringify(checkSysAdminUID(uid)), { status: 200, headers })
           ); 

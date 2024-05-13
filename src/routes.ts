@@ -30,6 +30,10 @@ export const routes: RouteDefinition[] = [
     component: lazy(() => import('./pages/ResetPassword')),
   },
   {
+    path: '/admin',
+    component: lazy(() => import('./pages/SysAdmin/AdminHome')),
+  },
+  {
     path: '**',
     component: lazy(() => import('./errors/404')),
   },

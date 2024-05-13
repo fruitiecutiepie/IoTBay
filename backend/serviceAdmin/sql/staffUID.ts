@@ -37,5 +37,5 @@ export const checkUID = (uid: string): boolean => {
 }
 
 export const checkSysAdminUID = (uid: string): boolean => {
-    return uid === "BT1CYU3FhSMON2vjT1JX7N3njpx2";
+    return uid === "4hIPub0rJMQnTxWITCNFgC8ZGz63";
 }
