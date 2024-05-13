@@ -1,9 +1,6 @@
-// backend/serviceCustomerManagement/customerManagementFetchHandler.ts
-import { getCustomers, addCustomer, updateCustomer, deleteCustomer } from './fetchHandlers';
+import {  customerFetchHandler } from './fetchHandlers/customerManagementFetchHandler';
+import { FetchHandler } from "..";
 
-export default {
-  getCustomers,
-  addCustomer,
-  updateCustomer,
-  deleteCustomer
+export const customerManagementFetchHandler = {
+      ...customerFetchHandler
 };

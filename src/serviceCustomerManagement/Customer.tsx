@@ -1,26 +1,33 @@
-import { createSignal, For } from 'solid-js';
+import { createSignal, onMount, For } from 'solid-js';
+import { fetchCustomer, addOrUpdateCustomer, deleteCustomer } from '../serviceCustomerManagement/customerManagement';
 import { useNavigate } from '@solidjs/router';
+
 
 const CustomerManagement = () => {
   const navigate = useNavigate();
-  const [customers, setCustomers] = createSignal([
-    { id: 1, name: "John Doe", email: "john@example.com" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com" },
-  ]);
+  const [customers, setCustomers] = createSignal([]);
 
-  const handleAddCustomer = () => {
-    // Placeholder for adding a customer
-    const newCustomer = { id: customers().length + 1, name: "New Customer", email: "new@example.com" };
-    setCustomers([...customers(), newCustomer]);
+  onMount(async () => {
+    // Fetch all customers on component mount
+    const initialCustomers = await fetchCustomer(); // Ensure your API can handle fetching all customers
+    setCustomers(initialCustomers || []);
+  });
+
+  const handleAddCustomer = async () => {
+    // API call to add a new customer
+    const newCustomer = { name: "New Customer", email: "new@example.com", type: "individual", address: "123 Main St", status: true };
+    const addedCustomer = await addOrUpdateCustomer(newCustomer);
+    setCustomers([...customers(), addedCustomer]);
   };
 
-  const handleDeleteCustomer = (customerId) => {
-    // Placeholder for deleting a customer
+  const handleDeleteCustomer = async (customerId) => {
+    // API call to delete a customer
+    await deleteCustomer(customerId);
     setCustomers(customers().filter(customer => customer.id !== customerId));
   };
 
   const handleEditCustomer = (customerId) => {
-    // Navigate to edit customer page, this is a placeholder
+    // Navigate to edit customer page with preloaded data
     navigate(`/edit-customer/${customerId}`);
   };
 

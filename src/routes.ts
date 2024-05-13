@@ -26,17 +26,14 @@ export const routes: RouteDefinition[] = [
     component: lazy(() => import('./pages/SignUp')),
   },
   {
-<<<<<<< HEAD
-=======
     path: '/adminpanel', // route path to admin panel
-    component: lazy(() => import('./pages/AdminPanel')),
+    component: lazy(() => import('./serviceCustomerManagement/AdminPanel')),
   }, 
   {
     path: '/customer', // route path to customer management page
-    component: lazy(() => import('./pages/Customer')),
+    component: lazy(() => import('./serviceCustomerManagement/Customer')),
   },
   {
->>>>>>> 02e4a66 (Julian)
     path: '/forgot',
     component: lazy(() => import('./pages/ResetPassword')),
   },
@@ -44,8 +41,4 @@ export const routes: RouteDefinition[] = [
     path: '**',
     component: lazy(() => import('./errors/404')),
   },
-<<<<<<< HEAD
-=======
-  
->>>>>>> 02e4a66 (Julian)
 ];
