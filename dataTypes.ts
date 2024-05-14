@@ -15,3 +15,8 @@ export type UserSession = {
 export type StaffUID = {
   uid: string;
 }
+
+export type UserNumber = {
+  uid: string;
+  phone: string;
+}

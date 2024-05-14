@@ -12,7 +12,6 @@ export const staffUIDGet = (uid: string): StaffUID => {
 }
 
 export const staffUIDInsertOrUpdate = (uid: string): StaffUID => {
-    var staffUID: StaffUID = {uid}
     const q = db.query(
         `INSERT OR REPLACE INTO staffUID (
             uid

@@ -6,4 +6,11 @@ export const staffDb = () => {
       uid TEXT NOT NULL PRIMARY KEY
     );`
   );
+
+  db.exec(
+    `CREATE TABLE IF NOT EXISTS userNumber (
+      uid TEXT NOT NULL PRIMARY KEY,
+      phone TEXT NOT NULL
+    );`
+  )
 }

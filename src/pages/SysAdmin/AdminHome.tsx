@@ -1,23 +1,26 @@
 import { A, useNavigate } from "@solidjs/router";
 import { For, Show, onMount, createSignal } from 'solid-js';
-import { User } from '../../../dataTypes';
+import { User, UserNumber } from '../../../dataTypes';
 import { createStore } from 'solid-js/store';
 import { fetchAuthUserGet } from '../../serviceAuth/authUser';
 import { fetchStaffUIDAuth } from "../../serviceAdmin/staffUID";
 import { fetchUserList } from "../../serviceAdmin/staffList";
+import { fetchAddUserNumber, fetchUserNumberGetAll } from "../../serviceAdmin/userNumber";
 
 type AdminHomeStore = {
   user: User | undefined;
   userStaffType: string | undefined;
   staffList: User[] | undefined;
   customerList: User[] | undefined;
+  phoneNumberList: UserNumber[] | undefined;
 }
 
 const defaultAdminHomeStore: AdminHomeStore = {
   user: undefined,
   userStaffType: undefined,
   staffList: undefined,
-  customerList: undefined
+  customerList: undefined,
+  phoneNumberList: undefined
 }
 
 export default function AdminHome() {
@@ -34,6 +37,9 @@ export default function AdminHome() {
 
     const customerList = await fetchUserList("customer");
     setConfigStore('customerList', customerList);
+
+    const phoneNumberList = await fetchUserNumberGetAll();
+    setConfigStore('phoneNumberList', phoneNumberList);
 
     const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, "Admin");
     const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, "SysAdmin");
@@ -74,14 +80,17 @@ export default function AdminHome() {
                   </div>
                   <div class="table-row-group">
                     <For each={configStore.customerList} fallback={<div>Loading...</div>}>
-                      {(user, index) => (
-                        <div class={`table-row ${selectedCustomer() === index() ? 'bg-blue-100' : 'hover:bg-gray-50'}
-                            cursor-pointer`} onClick={() => setSelectedCustomer(index)}>
-                          <div class="table-cell px-4 py-2 border-t">{user.name}</div>
-                          <div class="table-cell px-4 py-2 border-t">{user.email}</div>
-                          <div class="table-cell px-4 py-2 border-t">{user.email}</div>
-                        </div>
-                      )}
+                      {(user, index) => {
+                        const userPhone = configStore.phoneNumberList.find((u) => u.uid === user.uid)?.phone ?? 'No Phone Number Found';
+                        return (
+                          <div class={`table-row ${selectedCustomer() === index() ? 'bg-blue-100' : 'hover:bg-gray-50'}
+                              cursor-pointer`} onClick={() => setSelectedCustomer(index)}>
+                            <div class="table-cell px-4 py-2 border-t">{user.name}</div>
+                            <div class="table-cell px-4 py-2 border-t">{user.email}</div>
+                            <div class="table-cell px-4 py-2 border-t">{userPhone}</div>
+                          </div>
+                        );
+                      }}
                     </For>
                   </div>
                 </div>
