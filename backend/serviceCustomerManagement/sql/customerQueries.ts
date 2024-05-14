@@ -16,6 +16,13 @@ export const customerGet = (id: string): Customer => {
   return query.get({ $id: id }) as Customer;
 }
 
+export const customerGetAll = (): Customer[] => {
+  const query = db.query(
+    `SELECT * FROM customers;`
+  );
+  return query.all() as Customer[];
+};
+
 export const customerInsertOrUpdate = (customer: Customer): Customer => {
   const query = db.query(
     `INSERT OR REPLACE INTO customers (
