@@ -22,9 +22,9 @@ export const userListFetchHandler: FetchHandler = {
           new Response(JSON.stringify(filterStaff(allUsers)), { status: 200, headers })
         );
       }
-      else if (filter === "all") { // For testing. Remove later.
+      else if (filter === "customer") {
         return Promise.resolve(
-          new Response(JSON.stringify(allUsers), { status: 200, headers })
+          new Response(JSON.stringify(filterCustomer(allUsers)), { status: 200, headers })
         );
       }
       else {
@@ -44,4 +44,14 @@ const filterStaff = (users: User[]): User[] => {
   });
 
   return staffList;
+}
+
+const filterCustomer = (users: User[]): User[] => {
+  var customerList: User[] = new Array;
+  users.forEach(user => {
+    if (!checkUID(user.uid) && !checkSysAdminUID(user.uid))
+      customerList.push(user);
+  });
+
+  return customerList;
 }
