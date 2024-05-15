@@ -4,6 +4,7 @@ import { Customer, customerGet, customerInsertOrUpdate, customerDelete, customer
 
 type ReqBody = {
   customer: Customer | undefined;
+  event: 'delete';
 }
 
 export const customerFetchHandler: FetchHandler = {
@@ -28,16 +29,32 @@ export const customerFetchHandler: FetchHandler = {
     },
     POST: async (req: Request, headers: Headers) => {
       const reqBody = await req.json() as ReqBody;
-      if (!reqBody.customer) {
-        console.error(`/customer: Customer data is required`);
+      if (reqBody.event === 'delete'){
+        const url = new URL(req.url);
+        const id = url.searchParams.get("id");
+        if (!id) {
+          console.error(`/customer: ID is required to delete`);
+          return Promise.resolve(
+            new Response(undefined, { status: 400, headers })
+          );
+        }
+        await customerDelete(id);
         return Promise.resolve(
-          new Response(undefined, { status: 400, headers })
+          new Response(undefined, { status: 200, headers })
         );
       }
-      const customer = await customerInsertOrUpdate(reqBody.customer);
-      return Promise.resolve(
-        new Response(JSON.stringify(customer), { status: 200, headers })
-      );
+      else{
+        if (!reqBody.customer) {
+          console.error(`/customer: Customer data is required`);
+          return Promise.resolve(
+            new Response(undefined, { status: 400, headers })
+          );
+        }
+        const customer = await customerInsertOrUpdate(reqBody.customer);
+        return Promise.resolve(
+          new Response(JSON.stringify(customer), { status: 200, headers })
+        );
+      }
     },
     PUT: async (req: Request, headers: Headers) => {
       const reqBody = await req.json() as ReqBody;
@@ -52,19 +69,5 @@ export const customerFetchHandler: FetchHandler = {
         new Response(JSON.stringify(updatedCustomer), { status: 200, headers })
       );
     },
-    DELETE: async (req: Request, headers: Headers) => {
-      const url = new URL(req.url);
-      const id = url.searchParams.get("id");
-      if (!id) {
-        console.error(`/customer: ID is required to delete`);
-        return Promise.resolve(
-          new Response(undefined, { status: 400, headers })
-        );
-      }
-      await customerDelete(id);
-      return Promise.resolve(
-        new Response(undefined, { status: 200, headers })
-      );
-    }
   }
 }

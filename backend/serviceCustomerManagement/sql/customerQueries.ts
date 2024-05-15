@@ -47,8 +47,8 @@ export const customerInsertOrUpdate = (customer: Customer): Customer => {
 }
 
 export const customerDelete = (id: string): void => {
-  const query = db.query(
+  const query = db.prepare(
     `DELETE FROM customers WHERE id = $id;`
   );
-  query.run();
+  query.run({ $id: id });
 }

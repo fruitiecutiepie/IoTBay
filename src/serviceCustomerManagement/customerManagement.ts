@@ -1,6 +1,11 @@
 import config from "../../config.json";
 import { Customer } from "../../dataTypes";
 
+type ReqBody = {
+  customer: Customer | undefined;
+  event: 'delete';
+}
+
 // Function to fetch all customers
 export const fetchAllCustomers = async (): Promise<Customer[]> => {
   const res = await fetch(`http://localhost:${config.serverPort}/customer`);
@@ -29,7 +34,10 @@ export const addOrUpdateCustomer = async (customer: Customer): Promise<Customer>
 // Function to delete a customer
 export const deleteCustomer = async (id: string): Promise<void> => {
   const res = await fetch(`http://localhost:${config.serverPort}/customer?id=${id}`, {
-    method: 'DELETE'
+    method: 'POST',
+    body: JSON.stringify({
+      event: 'delete'
+    } as ReqBody)
   });
   if (!res.ok) throw new Error(`Failed to delete customer with ID: ${id}`);
 };
