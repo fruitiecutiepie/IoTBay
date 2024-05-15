@@ -1,0 +1,45 @@
+// src/services/serviceOrderManagement/orderItems.ts
+
+import { Order } from "../../sql/Order";
+
+// Mock database or API calls
+let orders: Order[] = [];
+
+// Fetch all orders for a given user ID
+export async function fetchOrders(userId: string): Promise<Order[]> {
+  // Simulate fetching orders from a database or API
+  return orders.filter(order => order.userId === userId);
+}
+
+// Add a new order
+export async function addOrder(userId: string, items: string[], price: number): Promise<void> {
+  // Simulate adding an order to a database or API
+  const newOrder: Order = {
+    id: generateOrderId(),
+    userId,
+    items,
+    price,
+    status: 'saved'
+  };
+  orders.push(newOrder);
+}
+
+// Update the status of an order
+export async function updateOrderStatus(orderId: string, status: 'saved' | 'submitted'): Promise<void> {
+  // Simulate updating the order status in a database or API
+  const orderIndex = orders.findIndex(order => order.id === orderId);
+  if (orderIndex !== -1) {
+    orders[orderIndex].status = status;
+  }
+}
+
+// Remove an order
+export async function removeOrder(orderId: string): Promise<void> {
+  // Simulate removing the order from a database or API
+  orders = orders.filter(order => order.id !== orderId);
+}
+
+// Helper function to generate a random order ID
+function generateOrderId(): string {
+  return Math.random().toString(36).substring(7);
+}

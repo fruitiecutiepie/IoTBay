@@ -73,7 +73,7 @@ const App: Component = () => {
           </div>
           <div class="flex items-center">
             <div class="relative">
-            <Link href="/cart" class="px-4 py-2">
+            <Link href="/ordermanagement" class="px-4 py-2">
               <span class="flex items-center">
                 <span class="mr-1 no-underline hover:underline">Cart</span>
                 <span class="bg-red-500 text-white rounded-full text-xs px-1">
