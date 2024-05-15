@@ -16,12 +16,13 @@ export const userNumberFetchHandler: FetchHandler = {
         if (!uid) {
           return Promise.resolve(
             new Response(JSON.stringify(userNumberGetAll()), { status: 200, headers })
-          )
-        };
+          );
+        }
 
         return Promise.resolve(
           new Response(JSON.stringify(userNumberGet(uid)), { status: 200, headers })
         );
+
       },
       POST: async (req: Request, headers: Headers) => {
         const reqBody = await req.json() as ReqBody;

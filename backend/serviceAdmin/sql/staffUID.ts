@@ -5,10 +5,8 @@ export type StaffUID = {
 }
 
 export const staffUIDGet = (uid: string): StaffUID => {
-    const q = db.query(
-        'SELECT * FROM staffUID WHERE uid = $uid;'
-        );
-    return q.get() as StaffUID;
+    const q = db.query('SELECT * FROM staffUID WHERE uid = ?').all(uid);
+    return q[0] as StaffUID;
 }
 
 export const staffUIDInsertOrUpdate = (uid: string): StaffUID => {
@@ -24,8 +22,7 @@ export const staffUIDInsertOrUpdate = (uid: string): StaffUID => {
 }
 
 export const staffUIDDelete = (uid: string): void => {
-    const q = db.query('DELETE FROM staffUID WHERE uid = $uid;');
-    q.run();
+    const q = db.query('DELETE FROM staffUID WHERE uid = ?').run(uid);
 }
 
 export const checkUID = (uid: string): boolean => {

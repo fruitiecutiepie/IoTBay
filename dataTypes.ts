@@ -18,5 +18,5 @@ export type StaffUID = {
 
 export type UserNumber = {
   uid: string;
-  phone: string;
+  number: string;
 }

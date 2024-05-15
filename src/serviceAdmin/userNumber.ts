@@ -1,5 +1,5 @@
 import config from "../../config.json";
-import { UserNumber } from "../../dataTypes";
+import { User, UserNumber } from "../../dataTypes";
 
 type ReqBody = {
   uid: string;
@@ -12,9 +12,12 @@ export const fetchUserNumberGet = async (uid: string): Promise<UserNumber> => {
   return await res.json();
 }
 
+
+
 export const fetchUserNumberGetAll = async (): Promise<UserNumber[]> => {
     const res = await fetch(`http://localhost:${config.serverPort}/auth/number`);
-    return await res.json();
+    const v = await res.json() as UserNumber[];
+    return v;
   }
 
 export const fetchAddUserNumber = async (uid: string, number: string): Promise<void> => {

@@ -10,7 +10,7 @@ export const staffDb = () => {
   db.exec(
     `CREATE TABLE IF NOT EXISTS userNumber (
       uid TEXT NOT NULL PRIMARY KEY,
-      phone TEXT NOT NULL
+      number TEXT NOT NULL
     );`
   )
 }

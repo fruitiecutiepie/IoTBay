@@ -7,12 +7,14 @@ export default function useFormStore() {
       email: '',
       password: '',
       confirmPassword: '',
+      phone: '',
     },
     errors: {
       email: '',
       password: '',
       confirmPassword: '',
       submission: '',
+      phone: '',
     },
     result: '',
   });

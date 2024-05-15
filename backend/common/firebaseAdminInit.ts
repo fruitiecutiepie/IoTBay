@@ -28,3 +28,50 @@ export async function getAllUsers(): Promise<User[]> {
         return new Array;
     }
 }
+
+export async function deleteUser(uid: string): Promise<void> {
+    console.error("Working");
+    await admin.auth().deleteUser(uid).then(() => {
+        console.error('Successfully deleted user');
+      })
+      .catch((error) => {
+        console.error('Error deleting user:', error);
+      });
+}
+
+export async function addUser(user: User, ps: string): Promise<UserRecord> {
+    return await admin.auth().createUser({
+        displayName: user.name,
+        email: user.email,
+        emailVerified: true,
+        password: ps,
+        disabled: false
+    });
+}
+
+export async function updateUser(user: User, ps: string): Promise<UserRecord> {
+    return await admin.auth().updateUser(user.uid, {
+        displayName: user.name,
+        email: user.email,
+        emailVerified: user.email_verified,
+        password: ps,
+    });
+}
+
+export async function userDisabled(uid: string, disable: boolean): Promise<void> {
+    await admin.auth().updateUser(uid, {
+        disabled: disable
+    });
+}
+
+export async function isUserDisabled(uid: string): Promise<Boolean> {
+    var isDisable = (await admin.auth().getUser(uid)).disabled;
+    if (isDisable) {
+        //console.error('User is Disabled');
+    }
+    else {
+        //console.error('User is Enabled');
+    }
+    
+    return isDisable;
+}

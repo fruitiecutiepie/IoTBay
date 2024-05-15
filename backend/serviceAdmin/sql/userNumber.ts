@@ -6,26 +6,25 @@ export type UserNumber = {
 }
 
 export const userNumberGet = (uid: string): UserNumber => {
-    const q = db.query(
-        'SELECT * FROM staffUID WHERE uid = $uid;'
-        );
-    return q.get() as UserNumber;
+    const q = db.query('SELECT * FROM userNumber WHERE uid = ?').all(uid);
+    return q[0] as UserNumber;
 }
 
 export const userNumberGetAll = (): UserNumber[] => {
     const q = db.query(
-        'SELECT * FROM staffUID WHERE uid = $uid;'
+        'SELECT * FROM userNumber;'
         );
+    
     return q.all() as UserNumber[];
 }
 
 export const userNumberInsertOrUpdate = (uid: string, number: string): UserNumber => {
     const q = db.query(
-        `INSERT OR REPLACE INTO staffUID (
-            uid
+        `INSERT OR REPLACE INTO userNumber (
+            uid,
             number
           ) VALUES (
-            $uid
+            $uid,
             $number
           );`
     );
