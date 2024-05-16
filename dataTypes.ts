@@ -20,3 +20,12 @@ export type UserNumber = {
   uid: string;
   number: string;
 }
+
+export type Customer = {
+  id: string;
+  name: string;
+  email: string;
+  type: string; // 'company' or 'individual'
+  address: string;
+  status: boolean;
+}

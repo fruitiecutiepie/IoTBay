@@ -26,6 +26,14 @@ export const routes: RouteDefinition[] = [
     component: lazy(() => import('./pages/SignUp')),
   },
   {
+    path: '/adminpanel', // route path to admin panel
+    component: lazy(() => import('./serviceCustomerManagement/AdminPanel')),
+  }, 
+  {
+    path: '/customer', // route path to customer management page
+    component: lazy(() => import('./serviceCustomerManagement/Customer')),
+  },
+  {
     path: '/forgot',
     component: lazy(() => import('./pages/ResetPassword')),
   },

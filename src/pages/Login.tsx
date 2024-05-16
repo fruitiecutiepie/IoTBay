@@ -10,12 +10,20 @@ import { fetchStaffUIDAuth } from "../serviceAdmin/staffUID";
 export default function Login() {
   const navigate = useNavigate();
   const { formStore, setFormStore } = useFormStore();
-  
+
   const signIn = () => {
     signInWithEmailAndPassword(auth, formStore.fields.email, formStore.fields.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
 
+        // Check if the login is for the admin
+        if (formStore.fields.email === "admin123@example.com" && formStore.fields.password === "Admin123!") {
+          console.log("Admin logged in");
+          navigate('/adminpanel'); // Navigate to the admin panel if admin credentials are used
+          return;
+        }
+
+        // If not admin, proceed with normal user login
         await fetchAuthUserSessionInsertLogin(user.uid);
 
         navigate('/welcome');
@@ -44,7 +52,7 @@ export default function Login() {
               <input
                 type="email"
                 required
-                placeholder={"Email address"}
+                placeholder="Email address"
                 autocomplete="email"
                 value={formStore.fields.email}
                 onInput={(e) => setFormStore(prev => ({ ...prev, fields: { ...prev.fields, email: e.currentTarget.value } }))}
