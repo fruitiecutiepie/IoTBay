@@ -4,6 +4,7 @@ import { initDb } from "./db/initDb";
 import { authFetchHandler } from "./serviceAuth/authFetchHandler";
 import { staffFetchHandler } from "./serviceAdmin/staffFetchHandler";
 import { customerManagementFetchHandler } from "./serviceCustomerManagement/customerManagementFetchHandler";
+import { PmoduleFetchHandler } from "./servicePayments/PmoduleFecthHandler";
 
 const SERVER_PORT = 46822;
 
@@ -16,7 +17,8 @@ export type FetchHandler = {
 const fetchHandlers: FetchHandler = {
   ...authFetchHandler,
   ...staffFetchHandler, // 'Registers' the staff fetch handler.
-  ...customerManagementFetchHandler
+  ...customerManagementFetchHandler,
+  ...PmoduleFetchHandler
 };
 
 (() => {

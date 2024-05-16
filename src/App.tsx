@@ -105,9 +105,10 @@ const App: Component = () => {
             <li
               class="py-2 px-4"
             >
-                {/* <Link href="/test" class="no-underline hover:underline">
-                  Test
-                </Link> */}
+                { 
+                <Link href="/payments" class="no-underline hover:underline">
+                  Paymentshome
+                </Link> }
               </li>
             {/* Andrew's code start. */}
             { configStore.userStaffType==="Admin" || configStore.userStaffType==="SysAdmin" ? (

@@ -16,6 +16,7 @@ export default function useFormStore() {
       submission: '',
       phone: '',
     },
+
     // Andrew's code start.
     searchCustomer: {
       name: '',
@@ -28,6 +29,24 @@ export default function useFormStore() {
       email: '',
     },
     // Andrew's code end.
+
+    payments: {
+      paymentid: String,
+      orderid: String,
+      paymentmethod: String,
+      creditcarddetails: Number,
+      amount: Number,
+      date: Date,
+    },
+    
+    paymentsstore: {
+      paymentmethod: String,
+      holdername:String, 
+      creditcardnumber: Number,
+      confirmedcard: Number, 
+      expirydate: Number,
+      billingaddress: String, 
+    },
     result: '',
   });
 

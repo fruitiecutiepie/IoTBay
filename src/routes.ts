@@ -45,4 +45,16 @@ export const routes: RouteDefinition[] = [
     path: '**',
     component: lazy(() => import('./errors/404')),
   },
+  {
+  path: '/payments',
+    component: lazy(() => import('./pages/Payments')),
+  },
+  {
+  path: '/carddetails',
+    component: lazy(() => import('./pages/CardDetails')),
+  },
+  {
+  path: '/updatecarddetails',
+    component: lazy(() => import('./pages/UpdateCardDetails')),
+  },
 ];
