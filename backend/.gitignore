@@ -173,3 +173,6 @@ dist
 iotbay.db
 iotbay.db-shm
 iotbay.db-wal
+
+# firebase admin config
+firebaseAdminConfig.json

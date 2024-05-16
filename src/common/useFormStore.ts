@@ -7,13 +7,27 @@ export default function useFormStore() {
       email: '',
       password: '',
       confirmPassword: '',
+      phone: '',
     },
     errors: {
       email: '',
       password: '',
       confirmPassword: '',
       submission: '',
+      phone: '',
     },
+    // Andrew's code start.
+    searchCustomer: {
+      name: '',
+      phone: '',
+      email: '',
+    },
+    searchStaff: {
+      name: '',
+      phone: '',
+      email: '',
+    },
+    // Andrew's code end.
     result: '',
   });
 

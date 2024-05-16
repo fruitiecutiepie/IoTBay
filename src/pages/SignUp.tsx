@@ -5,14 +5,15 @@ import { auth } from '../common/firebaseClientInit'
 
 import useFormStore from "../common/useFormStore";
 import { fetchAuthUserSessionInsertLogin } from "../serviceAuth/authUserSession";
+import { fetchAddUserNumber } from "../serviceAdmin/userNumber";
 
 export default function SignUp() {
   const navigate = useNavigate();
   const { formStore, setFormStore } = useFormStore();
 
   const hasFormErrors = () => {
-    return (!!formStore.errors.email || !!formStore.errors.password || !!formStore.errors.confirmPassword) ||
-      (!formStore.fields.email || !formStore.fields.password || !formStore.fields.confirmPassword);
+    return (!!formStore.errors.email || !!formStore.errors.phone || !!formStore.errors.password || !!formStore.errors.confirmPassword) ||
+      (!formStore.fields.email || !formStore.fields.phone || !formStore.fields.password || !formStore.fields.confirmPassword);
   }
   
   const signUp = () => {
@@ -25,6 +26,7 @@ export default function SignUp() {
           displayName: formStore.fields.name,
         });
 
+        await fetchAddUserNumber(user.uid, formStore.fields.phone);
         sendEmailVerification(user);
         navigate('/welcome');
       })
@@ -79,6 +81,25 @@ export default function SignUp() {
                 class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none border focus:border-indigo-500 autofill:bg-transparent"
                 />
               {formStore.errors.email && <div class="text-sm mb-2 self-start text-red-500">{formStore.errors.email}</div>}
+              {/* Andrew's code start. */}
+              <input
+                type="phone"
+                required
+                placeholder={"Phone Number"}
+                autocomplete="phone"
+                value={formStore.fields.phone}
+                onInput={(e) => {
+                  setFormStore(prev => ({ ...prev, fields: { ...prev.fields, phone: e.currentTarget.value } }));
+                  if (!/^\d{11}$/.test(e.currentTarget.value)) {
+                    setFormStore(prev => ({ ...prev, errors: { ...prev.errors, phone: "Phone number must contain 10 digits." } }));
+                  } else {
+                    setFormStore(prev => ({ ...prev, errors: { ...prev.errors, phone: "" } }));
+                  }
+                }}
+                class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none border focus:border-indigo-500 autofill:bg-transparent"
+                />
+              {formStore.errors.phone && <div class="text-sm mb-2 self-start text-red-500">{formStore.errors.phone}</div>}
+              {/* Andrew's code end. */}
               <input
                 type="password"
                 required
