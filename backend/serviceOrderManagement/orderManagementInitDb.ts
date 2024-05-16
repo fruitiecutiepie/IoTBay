@@ -8,7 +8,6 @@ export const initOrderManagementDb = () => {
       status TEXT NOT NULL,
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL,
-      FOREIGN KEY (userId) REFERENCES users(id)
     )
   `);
 
@@ -19,7 +18,6 @@ export const initOrderManagementDb = () => {
       productId TEXT NOT NULL,
       quantity INTEGER NOT NULL,
       price REAL NOT NULL,
-      FOREIGN KEY (orderId) REFERENCES orders(id)
     )
   `);
 };
