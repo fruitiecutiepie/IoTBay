@@ -8,7 +8,7 @@ export type OrderItem = {
     price: string;
   }
 
-
+  //GET ORDER ITEM
   export const OrderItemGet = (itemId: string): OrderItem => {
     const query = db.query(
       `SELECT * FROM orderItems WHERE id = $id;`
@@ -16,18 +16,18 @@ export type OrderItem = {
     return query.get({ $itemId: itemId }) as OrderItem;
   }
 
-
-export const OrderItemGetAll = (): OrderItem[] => {
+  //GET ALL ORDERITEMS
+  export const OrderItemGetAll = (): OrderItem[] => {
     const query = db.query(
       `SELECT * FROM orderItems;`
     );
     return query.all() as OrderItem[];
   };
-
+  //ADD OR UPDATE ORDERITEMS
   export const OrderItemInsertOrUpdate = (OrderItem: OrderItem): OrderItem => {
     const query = db.query(
       `INSERT OR REPLACE INTO orderItems (
-        id,
+        itemId,
         orderId,
         productId,
         quantity,
@@ -44,7 +44,7 @@ export const OrderItemGetAll = (): OrderItem[] => {
       $price: OrderItem.price
     }) as OrderItem;
   }
-
+  //DELETE ITEM
   export const OrderItemDelete = (): void => {
     const query = db.query(
       `DELETE FROM orderItems;`

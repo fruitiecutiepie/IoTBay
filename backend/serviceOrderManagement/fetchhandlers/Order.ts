@@ -38,6 +38,7 @@ export const orderFetchHandler: FetchHandler = {
         new Response(undefined, { status: 200, headers })
       ); 
       } 
+        // Deletes specified order by its ID
         else if (reqBody.event==="deleteSpecific" && reqBody.orderId){
         await OrderDeleteSpecific(reqBody.orderId);
         return Promise.resolve(

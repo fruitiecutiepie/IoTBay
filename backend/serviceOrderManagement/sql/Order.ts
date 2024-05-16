@@ -7,7 +7,7 @@ export type Order = {
     createdAt: string;
     updatedAt: string;
   }
-
+  //GET ORDER 
   export const OrderGet = (orderId: string): Order => {
     const query = db.query(
       `SELECT * FROM orders WHERE id = $id;`
@@ -15,14 +15,14 @@ export type Order = {
     return query.get({ $orderId: orderId }) as Order;
   }
 
-  
+  //GET ALL ORDERS
   export const OrderGetAll = (): Order[] => {
     const query = db.query(
       `SELECT * FROM orders;`
     );
     return query.all() as Order[];
   };
-
+  //INSERT ORDER
   export const OrderInsertOrUpdate = (OrderDetail: Order): Order => {
     const query = db.query(
       `INSERT OR REPLACE INTO orders (
@@ -43,7 +43,7 @@ export type Order = {
       $updatedAt: OrderDetail.updatedAt
     }) as Order;
   }
-  
+  //DELETE ORDER
   export const OrderDelete = (): void => {
     const query = db.query(
       `DELETE FROM orders;`
@@ -51,7 +51,7 @@ export type Order = {
     query.run();
   }
 
-    
+  //DELETE SPECIFIC
   export const OrderDeleteSpecific = (orderId:string): void => {
     const query = db.query(
       `DELETE FROM orders WHERE orderId = ?;`

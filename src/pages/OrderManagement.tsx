@@ -14,21 +14,21 @@ const OrderDetails = () => {
     setOrders(fetchedOrders);
     setFilteredOrders(fetchedOrders);
   });
-
+  //DELETES DATA ADDED TO THE TABLE
   const handleDelete = async (orderId: string) => {
     await deleteSpecificOrder(orderId);
     const updatedOrders = orders().filter(order => order.orderId !== orderId);
     setOrders(updatedOrders);
     setFilteredOrders(updatedOrders);
   };
-
+  //ADDS ENTERED DATA TO THE TABLE
   const handleAdd = async () => {
     await addOrUpdateOrder(newOrder());
     const fetchedOrders = await fetchAllOrders();
     setOrders(fetchedOrders);
     setFilteredOrders(fetchedOrders);
   };
-
+  //SEARCHES DATA FROM THE TABLE
   const handleSearch = () => {
     const query = searchQuery().toLowerCase();
     const filtered = orders().filter(order =>
@@ -38,6 +38,7 @@ const OrderDetails = () => {
     setFilteredOrders(filtered);
   };
 
+  //HTML TABLE SHOWING DATA FROM THE DATABASE
   return (
     <div class="container mx-auto">
       <h1 class="text-3xl font-bold mb-4">Order Details</h1>

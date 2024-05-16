@@ -21,7 +21,7 @@ export const orderItemFetchHandler: FetchHandler = {
           );
         }
   
-        // Fetch order by ID
+        // Fetch item by ID
         const orderItem = await OrderItemGet(orderItemId);
         return Promise.resolve(
           new Response(JSON.stringify(orderItem), { status: 200, headers })
@@ -39,7 +39,7 @@ export const orderItemFetchHandler: FetchHandler = {
       ); 
       } else {
         if (!reqBody.OrderItem) {
-          console.error(`/order: item data is required`);
+          console.error(`/item: item data is required`);
           return Promise.resolve(
             new Response(undefined, { status: 400, headers })
           );

@@ -1,5 +1,5 @@
 import { db } from '../db/initDb';
-
+//DATABASE INITALIZATION
 export const OrderManagementModuleinitDb = () => {
   db.exec(`
     CREATE TABLE IF NOT EXISTS orders (
@@ -20,7 +20,7 @@ export const OrderManagementModuleinitDb = () => {
       price INTEGER NOT NULL
     );
   `)
-
+  //SMAPLE DATA FOR ORDERS
   db.exec(`
     INSERT OR REPLACE INTO orders (orderId, userId, status, createdAt, updatedAt)
     VALUES ('123', '123', 'saved', '2023-05-04T13:00:00Z', '2023-05-06T15:00:00Z'),

@@ -37,8 +37,8 @@ type ReqBody = {
   export const deleteOrder = async (): Promise<void> => {
     const res = await fetch(`http://localhost:${config.serverPort}/order`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }, // Specify content type
-      body: JSON.stringify({ event: "delete" } as ReqBody) // Provide request body
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify({ event: "delete" } as ReqBody) 
     });
     if (!res.ok) throw new Error(`Failed to delete order`);
   };
@@ -46,8 +46,8 @@ type ReqBody = {
   export const deleteSpecificOrder = async (orderId:string): Promise<void> => {
     const res = await fetch(`http://localhost:${config.serverPort}/order`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }, // Specify content type
-      body: JSON.stringify({ event: "deleteSpecific", orderId:orderId } as ReqBody) // Provide request body
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: "deleteSpecific", orderId:orderId } as ReqBody) 
     });
     if (!res.ok) throw new Error(`Failed to delete order`);
   };
