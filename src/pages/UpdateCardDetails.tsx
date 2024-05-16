@@ -96,7 +96,7 @@ const state = useLocation().state as CardDetail;
 
   return (
     <div class="p-8">
-    <h1> {creditCardNumber()} </h1>  
+    <h1 class="text-2xl font-bold mt-4 flex justify-center">Credit card number = {creditCardNumber()} </h1>
     <form onSubmit={handleSubmit} class="max-w-md mx-auto">
         <div class="mb-4">
           <label class="text-gray-500" for="paymentMethod">Payment Method</label>

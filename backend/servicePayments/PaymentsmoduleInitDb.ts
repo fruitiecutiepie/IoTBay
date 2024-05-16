@@ -28,7 +28,7 @@ export const PaymentsmoduleInitDb = () => {
     INSERT INTO carddetails (paymentmethod, holdername, creditcardnumber, confirmedcard, expirydate, billingaddress)
     VALUES 
     ('Visa', 'John Doe', 1234567890123456, 1234567890123456, 0425, '123 Main St'),
-    ('Mastercard', 'Jane Smith', 2345678901234567, 2345678901234567, 0324, '0424 Elm St'),
+    ('Mastercard', 'Jane Smith', 2345678901234567, 2345678901234567, 0724, '0724 Elm St'),
     ('American Express', 'Alice Johnson', 3456789012345678, 3456789012345678, 0525, '789 Oak St');
   `);
 
