@@ -22,9 +22,9 @@ export const authInitDb = () => {
   )
   // Insert some dummy data
   db.exec(
-    `INSERT INTO user_session (
+    `INSERT OR REPLACE INTO user_session (
       uid, id, login_at, logout_at
-    ) VALUES (
+    ) VALUES
       ('1', '1', 1620000000, 1620000000),
       ('2', '2', 1620000000, 1620000000),
       ('3', '3', 1620000000, 1620000000),
@@ -45,6 +45,6 @@ export const authInitDb = () => {
       ('18', '18', 1620000000, 1620000000),
       ('19', '19', 1620000000, 1620000000),
       ('20', '20', 1620000000, 1620000000)
-    )`
+    ;`
   )
 }
