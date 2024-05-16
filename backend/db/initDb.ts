@@ -14,5 +14,5 @@ export const initDb = () => {
   );
   initCustomerManagementDb();
   authInitDb();
-  staffDb();
+  staffDb(); // Initialise the database table related to staff.
 }

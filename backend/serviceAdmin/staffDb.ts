@@ -1,20 +1,25 @@
+// MODEL // Andrew's Code
+
 import { db } from "../db/initDb";
 
+// Creates the table to store staff uids. This function is called in '/backend/db/initDb.ts' when the database starts or is created.
 export const staffDb = () => {
-  db.exec(
+  db.exec( // uid is a primary key to prevent duplicate entries.
     `CREATE TABLE IF NOT EXISTS staffUID (
-      uid TEXT NOT NULL PRIMARY KEY
+      uid TEXT NOT NULL PRIMARY KEY 
     );`
   );
 
-  db.exec(
+  db.exec( // uid is a primary key to prevent duplicate entries.
     `CREATE TABLE IF NOT EXISTS userNumber (
       uid TEXT NOT NULL PRIMARY KEY,
       number TEXT NOT NULL
     );`
   )
 
-  db.exec(
+  // Sample data to populate the database for demonstration purposes. The uid's correspond with existing
+  // user authentication information storedon firebase (a google api).
+  db.exec( 
     `INSERT OR REPLACE INTO userNumber (
       uid,
       number

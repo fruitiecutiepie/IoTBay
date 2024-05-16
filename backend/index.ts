@@ -15,7 +15,7 @@ export type FetchHandler = {
 
 const fetchHandlers: FetchHandler = {
   ...authFetchHandler,
-  ...staffFetchHandler,
+  ...staffFetchHandler, // 'Registers' the staff fetch handler.
   ...customerManagementFetchHandler
 };
 

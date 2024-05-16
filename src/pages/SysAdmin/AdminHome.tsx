@@ -1,3 +1,5 @@
+// VIEW // Andrew's Code
+
 import { A, useNavigate } from "@solidjs/router";
 import { For, Show, onMount, createSignal } from 'solid-js';
 import { User, UserNumber } from '../../../dataTypes';
@@ -9,6 +11,7 @@ import { fetchAddUserNumber, fetchUserNumberGetAll } from "../../serviceAdmin/us
 import useFormStore from "../../common/useFormStore";
 import { password } from "bun";
 
+// This contains all the information we might want to access or update from the html.
 type AdminHomeStore = {
   user: User | undefined;
   userStaffType: string | undefined;
@@ -19,6 +22,7 @@ type AdminHomeStore = {
   inactiveStaff: string[] | undefined;
 }
 
+// Provides default values so we can create the 'store'.
 const defaultAdminHomeStore: AdminHomeStore = {
   user: undefined,
   userStaffType: undefined,
@@ -30,39 +34,45 @@ const defaultAdminHomeStore: AdminHomeStore = {
 }
 
 export default function AdminHome() {
-  const [configStore, setConfigStore] = createStore(defaultAdminHomeStore);
-  const [selectedCustomer, setSelectedCustomer] = createSignal<User | undefined>();
-  const [selectedStaff, setSelectedStaff] = createSignal<User | undefined>();
-  const [uidToUpdate, setUidToUpdate] = createSignal<string | undefined>();
-  const { formStore, setFormStore } = useFormStore();
-  const hasFormErrors = () => {
+  // These are all solidjs components for easy data management.
+  const [configStore, setConfigStore] = createStore(defaultAdminHomeStore); // Create's the specified store from the default values.
+  // Signals are similar to stores but typically only store one variable.
+  const [selectedCustomer, setSelectedCustomer] = createSignal<User | undefined>(); // Stores the customer currently selected in the table.
+  const [selectedStaff, setSelectedStaff] = createSignal<User | undefined>(); // Stores the staff member currently selected in the table.
+  const [uidToUpdate, setUidToUpdate] = createSignal<string | undefined>(); // Stores the UID of a user being updated.
+  const { formStore, setFormStore } = useFormStore(); // Handles the information from any inputs on the page.
+
+  const hasFormErrors = () => { // Returns true if the inputs are valid and false if they aren't
     return (!!formStore.errors.email || !!formStore.errors.phone || !!formStore.errors.password) ||
       (!formStore.fields.email || !formStore.fields.phone || !formStore.fields.password);
   }
-  const hasUpdateFormErrors = () => {
+  const hasUpdateFormErrors = () => { // Same as hasFormErrors, but excludes the password as we don't want that to be updated so easily.
     return (!!formStore.errors.email || !!formStore.errors.phone) ||
       (!formStore.fields.email || !formStore.fields.phone);
   }
 
+  // This refreshes most of the stores and signals on the page without actually having to refresh the page.
+  // This is also mostly where the view interfaces with the controller.
   async function configInit() {
     const user = await fetchAuthUserGet();
-    setConfigStore('user', user);
+    setConfigStore('user', user); // Stores the user browsing the website..
 
     const phoneNumberList = await fetchUserNumberGetAll();
-    setConfigStore('phoneNumberList', phoneNumberList);
+    setConfigStore('phoneNumberList', phoneNumberList); // Stores every single phone number from the database.
 
     const staffList = await filterStaff();
     const customerList = await filterCustomers();
 
+    // Because fetchIsUserDisabled is async, it is best to use map() instead of forEach() to find which accounts are deactivated.
     const inactiveCustomersPromises = customerList.map(async (customer) => {
       var isDisabled = false;
       if (customer.uid)
         isDisabled = await fetchIsUserDisabled(customer.uid);
-      console.log(isDisabled);
+      //console.log(isDisabled);
       return isDisabled ? customer.uid : null;
     });
     const inactiveCustomers = (await Promise.all(inactiveCustomersPromises)).filter(uid => uid !== null);
-    setConfigStore('inactiveCustomers', inactiveCustomers);
+    setConfigStore('inactiveCustomers', inactiveCustomers); // Stores all the inactive customer account UIDs.
 
     
     const inactiveStaffPromises = staffList.map(async (staff) => {
@@ -70,11 +80,13 @@ export default function AdminHome() {
       return isDisabled ? staff.uid : null;
     });
     const inactiveStaff = (await Promise.all(inactiveStaffPromises)).filter(uid => uid !== null);
-    setConfigStore('inactiveStaff', inactiveStaff);
+    setConfigStore('inactiveStaff', inactiveStaff); // Stores all the inactive staff account UIDs.
 
+    // Checks if the user is an admin or sysadmin.
     const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, "Admin");
     const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, "SysAdmin");
 
+    // Stores the user's administrator status.
     if (isAdmin) {
       setConfigStore('userStaffType', "Admin");
     }
@@ -86,15 +98,17 @@ export default function AdminHome() {
     }
   }
 
-  onMount(async () => {
-    await configInit();
+  onMount(async () => { // Runs when the page first renders.
+    await configInit(); 
   });
 
+  // Filters each customer depending on the search parameters.
   const filterCustomers = async (): Promise<User[]> => {
     const list = await fetchUserList("customer");
     var filteredList: User[] = new Array;
 
     list.forEach(customer => {
+      // This finds the phone number if it has a corresponding UID.
       const customerPhone = configStore.phoneNumberList.find((u) => u.uid === customer.uid)?.number ?? "No Phone Number Found";
       if (customer.name.toLowerCase().includes(formStore.searchCustomer.name.toLowerCase()) && 
             customer.email.toLowerCase().includes(formStore.searchCustomer.email.toLowerCase()) &&
@@ -108,6 +122,7 @@ export default function AdminHome() {
     return filteredList;
   }
 
+  // Filter's each staff member depending on the search parameters.
   const filterStaff = async (): Promise<User[]> => {
     const list = await fetchUserList("staff");
     var filteredList: User[] = new Array;
@@ -126,6 +141,7 @@ export default function AdminHome() {
     return filteredList;
   }
 
+  // Used to handle the selection of customer's in the table in the UI.
   const setCustomer = (user: User) => {
     if (selectedCustomer()?.uid === user.uid) {
       setSelectedCustomer(undefined);
@@ -135,6 +151,7 @@ export default function AdminHome() {
     }
   }
   
+  // Used to handle the selection of staff in the table in the UI.
   const setStaff = (user: User) => {
     if (selectedStaff()?.uid === user.uid) {
       setSelectedStaff(undefined);
@@ -144,25 +161,33 @@ export default function AdminHome() {
     }
   }
 
+  // Resets the add/update user form on the bottom of the page.
   const refreshForm = () => {
     setFormStore(prev => ({ ...prev, fields: { name: "", email: "", password: "", confirmPassword: "", phone: "" } }));
     setUidToUpdate(undefined);
   }
 
+  /*************************************************************
+    The remaining functions respond to user input from the UI.
+  *************************************************************/
+
+  // Add's a user to firebase and sets up their phone number in the database.
   const addUser = async () => {
+    // Create a new user and populate it's fields with values from the formStore.
     var user: User = {
-      uid: "0",
+      uid: "0", // This is unused in this method - firebase assignes a uid later.
       name: formStore.fields.name,
       email: formStore.fields.email,
-      email_verified: true,
+      email_verified: true, // Not really verified, but it can be assumed the SysAdmin is inputting valid emails.
     };
-    const uid = await fetchAddUser(user, formStore.fields.password);
-    console.log("Adding number " + formStore.fields.phone + " to " + uid );
-    await fetchAddUserNumber(uid, formStore.fields.phone);
+    const uid = await fetchAddUser(user, formStore.fields.password); // Add's the user to firebase and returns it's UID.
+    //console.log("Adding number " + formStore.fields.phone + " to " + uid );
+    await fetchAddUserNumber(uid, formStore.fields.phone); // The uid is used to store the user's phone number in the database.
     await configInit();
     refreshForm();
   }
 
+  // These expressions populate the text entries with existing values that might be updated.
   const startUpdateUser = () => {
     setUidToUpdate(selectedCustomer().uid);
     const customerPhone = configStore.phoneNumberList.find((u) => u.uid === selectedCustomer().uid)?.number ?? "";
@@ -173,6 +198,8 @@ export default function AdminHome() {
     const customerPhone = configStore.phoneNumberList.find((u) => u.uid === selectedStaff().uid)?.number ?? "";
     setFormStore(prev => ({ ...prev, fields: { name: selectedStaff().name, email: selectedStaff().email, password: "", confirmPassword: "", phone: customerPhone } }));
   }
+
+  // Updates the user info on firebase and also updates their phone number in the database.
   const updateUser = async () => {
     const uid = uidToUpdate();
     var user: User = {
@@ -187,46 +214,55 @@ export default function AdminHome() {
     refreshForm();
   }
 
+  // Add's the selected user's uid to the staffUID list in the database.
   const promoteStaff = async () => {
     await fetchAddStaffUID(selectedCustomer().uid);
     await configInit();
   };
 
+  // Deactivates a user's account on firebase.
   const deactivateUser = async () => {
     await fetchDisableUser(selectedCustomer().uid, true);
     await configInit();
   }
 
+  // Activates a user's account on firebase.
   const activateUser = async () => {
     await fetchDisableUser(selectedCustomer().uid, false);
     await configInit();
   }
 
+  // Deletes a user's account on firebase.
   const deleteUser = async() => {
     await fetchDeleteUser(selectedCustomer().uid)
     await configInit();
   };
 
-
+  // Remove's the selected staff member's uid from the staffUID list in the database.
   const demoteStaff = async() => {
     await fetchDeleteStaffUID(selectedStaff().uid)
     await configInit();
   }
+
+  // Deactivates a staff member's account on firebase.
   const deactivateStaff = async () => {
     await fetchDisableUser(selectedStaff().uid, true);
     await configInit();
   }
 
+  // Activates a staff member's account on firebase.
   const activateStaff = async () => {
     await fetchDisableUser(selectedStaff().uid, false);
     await configInit();
   }
 
+  // Deletes a staff member's account on firebase.
   const deleteStaff = async () => {
     await fetchDeleteUser(selectedStaff().uid)
     await configInit();
   }
 
+  // Start of HTML code.
   return (
     <div class="text-gray-700 p-8 flex flex-col justify-center items-center">
       {
@@ -254,7 +290,8 @@ export default function AdminHome() {
                             required
                             placeholder={"Search Name"}
                             autocomplete="name"
-                            value={formStore.searchCustomer.name}
+                            value={formStore.searchCustomer.name} // Set to the value currently in the formstore.
+                            // This onInput sets the value in the formstore and then calls filterCustomers() which filters the customers base on that value.
                             onInput={(e) => { setFormStore(prev => ({ ...prev, searchCustomer: { ...prev.searchCustomer, name: e.currentTarget.value } })); filterCustomers() }}
                             class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
                           />
@@ -285,11 +322,12 @@ export default function AdminHome() {
                     </div>
                     <div class="table-row-group">
                       <For each={configStore.customerList} fallback={<div>Loading...</div>}>
-                        {(user, index) => {
+                        {(user, index) => { // A for loop html component to handle displaying user information.
                           const userPhone = configStore.phoneNumberList.find((u) => u.uid === user.uid)?.number ?? 'No Phone Number Found';
                           return (
+                            // Handles the selection of users.
                             <div class={`table-row ${selectedCustomer()?.uid === user.uid ? 'bg-blue-100' : 'hover:bg-gray-50'}
-                                cursor-pointer`} onClick={() => {setCustomer(user); configInit();}}>
+                                cursor-pointer`} onClick={() => {setCustomer(user); configInit();}}> 
                               <div class="table-cell px-4 py-2 border-t">{user.name}</div>
                               <div class="table-cell px-4 py-2 border-t">{user.email}</div>
                               <div class="table-cell px-4 py-2 border-t">{userPhone}</div>
@@ -301,15 +339,16 @@ export default function AdminHome() {
                   </div>
                 </div>
                   <div class="flex justify-between mt-4">
+                    {/* If a customer is not selected, all the buttons will be greyed out and unselectable. */}
                     <button class={`flex-1 mx-2 text-sm font-semibold text-blue-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-blue-800'} shadow`}
                       disabled={selectedCustomer() === undefined} onClick={startUpdateUser}>Update User</button>
                     <button class={`flex-1 mx-2 text-sm font-semibold text-yellow-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-yellow-800'} shadow`}
                       disabled={selectedCustomer() === undefined} onClick={promoteStaff}>Promote User</button>
-                    {configStore.inactiveCustomers.find((u) => u === selectedCustomer().uid) ?
+                    {configStore.inactiveCustomers.find((u) => u === selectedCustomer().uid) ? // If // Change which button is shown depending on the active/inactive status of the customer
                       (
                         <button class={`flex-1 mx-2 text-sm font-semibold text-green-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-green-800'} shadow`}
                           disabled={selectedCustomer() === undefined} onClick={activateUser}>Activate User</button>
-                      ) :
+                      ) : // Else
                         <button class={`flex-1 mx-2 text-sm font-semibold text-orange-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-orange-800'} shadow`}
                           disabled={selectedCustomer() === undefined} onClick={deactivateUser}>Deactivate User</button>
                       }
@@ -318,6 +357,7 @@ export default function AdminHome() {
                   </div>
               </div>
 
+              {/* This block is almost identical to the customer block, except it handles staff members.*/}
               <div class="max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg">
                 <div class="text-center text-2xl font-bold text-gray-700 mb-4">
                   Staff List
@@ -404,6 +444,7 @@ export default function AdminHome() {
               </div>
             </div>
 
+            {/* This is where users are added and updated. */}
             <div class="flex justify-center items-start space-x-8 px-8 py-4">
               <form action="javascript:void(0)" method="post">
                 <input
@@ -449,7 +490,7 @@ export default function AdminHome() {
                     class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none border focus:border-indigo-500 autofill:bg-transparent"
                     />
                   {formStore.errors.phone && <div class="text-sm mb-2 self-start text-red-500">{formStore.errors.phone}</div>}
-                  { uidToUpdate() === undefined ? (
+                  { uidToUpdate() === undefined ? ( // uidToUpdate() is undefined unless we are actively updating a user.
                     <input
                       type="password"
                       required
@@ -482,7 +523,7 @@ export default function AdminHome() {
                   }
                   {formStore.errors.password && <div class="text-sm mb-2 self-start text-red-500">{formStore.errors.password}</div>}
                   <div class="flex justify-between mt-4">
-                    { uidToUpdate() === undefined ? (
+                    { uidToUpdate() === undefined ? ( // uidToUpdate() is undefined unless we are actively updating a user.
                         <button class={`flex-1 mx-2 text-sm font-semibold text-green-600 py-2 px-4 rounded-lg ${hasFormErrors() ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-green-800'} shadow`} disabled={hasFormErrors()} onClick={addUser}>Add User</button>
                       ) :
                         <button class={`flex-1 mx-2 text-sm font-semibold text-blue-600 py-2 px-4 rounded-lg ${hasUpdateFormErrors() ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-blue-800'} shadow`} disabled={hasUpdateFormErrors()} onClick={updateUser}>Update User</button>

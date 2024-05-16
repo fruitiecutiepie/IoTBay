@@ -1,3 +1,7 @@
+// CONTROLLER // Andrew's Code
+
+// This code is mostly boilerplate. Look at ./staffList.ts for comprehensive comments.
+
 import { FetchHandler } from "../..";
 import { checkUID, checkSysAdminUID, staffUIDDelete, staffUIDGet, staffUIDInsertOrUpdate } from "../sql/staffUID";
 
