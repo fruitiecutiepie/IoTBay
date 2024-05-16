@@ -6,7 +6,7 @@ import { Payment } from "../../dataTypes";
 type ReqBody = {
   CardDetail: CardDetail | undefined;
   creditcardnumber: number | undefined;
-  event: "add" | "delete";
+  event: "add" | "delete" | "deleteinstance";
 }
 
 // Function to fetch all customers
@@ -44,3 +44,13 @@ export const deletecarddetails = async (): Promise<void> => {
   if (!res.ok) throw new Error(`Failed to delete payment method`);
 };
 
+export const deletecarddetailsInstance = async (cardnumber: number): Promise<void> => {
+  console.log(cardnumber);
+  await fetch(`http://localhost:${config.serverPort}/carddetails`, {
+    method: 'POST',
+    body: JSON.stringify({
+      creditcardnumber: cardnumber,
+      event: "deleteinstance"
+    } as ReqBody)
+  });
+}

@@ -45,3 +45,14 @@ export type CardDetail = {
     );
     query.run();
   }
+
+  // export const CardDetailDeleteInstance = (uid: string): CardDetail => {
+  //   const query = db.query(
+  //     `DELETE * FROM carddetails WHERE uid = ?;`
+  //   );
+  //   query.run();
+  // }
+  export const CardDetailDeleteInstance = (cardnumber: number) => {
+    const q = db.query('DELETE FROM carddetails WHERE creditcardnumber = ?').run(cardnumber);
+    
+}

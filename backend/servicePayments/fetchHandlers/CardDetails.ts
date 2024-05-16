@@ -1,10 +1,10 @@
 import { FetchHandler } from "../..";
-import { CardDetail, CardDetailGetAll, CardDetailInsertOrUpdate, CardDetailDelete } from "../sql/CardDetails";
+import { CardDetail, CardDetailGetAll, CardDetailInsertOrUpdate, CardDetailDelete, CardDetailDeleteInstance} from "../sql/CardDetails";
 
 type ReqBody = {
   CardDetail: CardDetail | undefined;
   creditcardnumber: number | undefined;
-  event: "add" | "delete";
+  event: "add" | "delete" | "deleteinstance";
 }
 
 export const carddetailFetchHandler: FetchHandler = {
@@ -26,7 +26,13 @@ export const carddetailFetchHandler: FetchHandler = {
           return Promise.resolve(
         new Response(undefined, { status: 200, headers })
       ); 
-      } else {
+      } else if (reqBody.event === "deleteinstance" && reqBody.creditcardnumber) {
+        console.error(reqBody.creditcardnumber);
+        await CardDetailDeleteInstance(reqBody.creditcardnumber);
+          return Promise.resolve(
+        new Response(undefined, { status: 200, headers }))
+      }
+      else {
         if (!reqBody.CardDetail) {
           console.error(`/carddetail: carddetail data is required`);
           return Promise.resolve(

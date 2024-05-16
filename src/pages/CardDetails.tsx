@@ -46,6 +46,12 @@ function PaymentForm() {
       setErrors(errors => ({ ...errors, expiryDate: 'Incorrect expiry date.' }));
     } else {
       setErrors(errors => ({ ...errors, expiryDate: '' }));
+    } 
+    if (expiryDate > 1230) {
+      setErrors(errors => ({ ...errors, expiryDate: 'Expiry date cannot be higher than 12/30.' }));
+    } else {
+      setErrors(errors => ({ ...errors, expiryDate: '' }));
+      setExpiryDate(expiryDate.toString());
     }
   };
 

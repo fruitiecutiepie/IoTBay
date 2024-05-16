@@ -1,14 +1,15 @@
 import { Link, useNavigate } from '@solidjs/router';
 import { onMount, createSignal, useContext, createEffect } from 'solid-js';
-import { fetchAllcarddetails, addOrUpdatecarddetails, deletecarddetails, fetchAllpayments } from '../CardDetails/authCardDetails';
-import { SharedObjectContext } from '../common/Sharedstore';
+import { fetchAllcarddetails, addOrUpdatecarddetails, deletecarddetails, fetchAllpayments,deletecarddetailsInstance } from '../CardDetails/authCardDetails';
+import { CardDetail, Payment } from '../../dataTypes';
+
 
 export default function Home() {
   const [payments, setPayments] = createSignal([]);
   const [cardDetails, setCardDetails] = createSignal([]);
   const [searchQuery, setSearchQuery] = createSignal('');
   const [selectedCard, setSelectedCard] = createSignal<number | undefined>();
-  const { object, setObject } = useContext(SharedObjectContext);
+  const [search,setSearch] = createSignal<string| undefined>();
   const navigate = useNavigate();
   const handleNavigate = () => {
     
@@ -20,7 +21,7 @@ export default function Home() {
       // Fetch saved payment details from the fetch handler
       const paymentsData = await fetchAllpayments();
       setPayments(paymentsData);
-
+      setSearch("");
       // Fetch card details from the fetch handler
       const cardDetailsData = await fetchAllcarddetails();
       setCardDetails(cardDetailsData);
@@ -42,6 +43,19 @@ export default function Home() {
     }
   };
 
+  const handledeletecardinstance = async () => {
+    try {
+      const cardnumber: CardDetail = cardDetails()[selectedCard()];
+      await (deletecarddetailsInstance(cardnumber.creditcardnumber));
+      // Refetch card details after deletion
+      const updatedCardDetails = await fetchAllcarddetails();
+      setCardDetails(updatedCardDetails);
+    } catch (error) {
+      console.error('Error deleting specific card details:', error);
+      // Handle error
+    }
+  };
+
   const Handleupdate = async () => {
     handleNavigate();
   } 
@@ -49,6 +63,23 @@ export default function Home() {
   const handleSelectCard = (index: number) => {
     setSelectedCard(index);
   };
+
+  const filterpayment = async (): Promise<Payment[]> => {
+    const list = await fetchAllpayments();
+    var filteredList: Payment[] = new Array;
+
+    list.forEach(payment => {
+
+      if (payment.paymentid.toLowerCase().includes(search().toLowerCase()) || payment.date.toString().toLowerCase().includes(search().toLowerCase()))  {   
+        
+        filteredList.push(payment);
+      }
+    });
+
+    setPayments(filteredList);
+    return filteredList;
+  }
+
 
   return (
     <div class="text-gray-700 p-8">
@@ -68,8 +99,8 @@ export default function Home() {
           type="text"
           class="block w-full border border-gray-300 rounded-md px-4 py-2 mt-1"
           placeholder="Search by payment ID or by date"
-          value={searchQuery()}
-          onInput={(e) => setSearchQuery(e.target.value)}
+          value={search()}
+          onInput={(e) => {setSearch(e.target.value); filterpayment();  }}
         />
       </div>
 
@@ -104,6 +135,7 @@ export default function Home() {
           <Link href="/updatecarddetails">
             <button onClick = {Handleupdate} class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded-lg">Update</button>
           </Link>
+          <button onClick={handledeletecardinstance} class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-4 rounded-lg">Delete Selected PaymentDetails</button>
           <button onClick={handleDeleteCardDetails} class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-4 rounded-lg">Delete</button>
         </div>
       </div>
