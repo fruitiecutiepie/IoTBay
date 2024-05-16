@@ -9,7 +9,7 @@ export const OrderManagementModuleinitDb = () => {
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
     );
-  `);
+  `)
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS orderItems (
@@ -20,12 +20,12 @@ export const OrderManagementModuleinitDb = () => {
       price INTEGER NOT NULL,
       FOREIGN KEY (orderId) REFERENCES orders(orderId)
     );
-  `);
+  `)
 
   db.exec(`
     INSERT INTO orders (orderId, userId, status, createdAt, updatedAt)
     VALUES ('123', '123', 'saved', '2023-05-04T13:00:00Z', '2023-05-06T15:00:00Z');
-  `);
+  `)
 }
 
 // Initialize the database
