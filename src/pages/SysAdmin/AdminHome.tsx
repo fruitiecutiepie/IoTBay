@@ -4,9 +4,10 @@ import { User, UserNumber } from '../../../dataTypes';
 import { createStore } from 'solid-js/store';
 import { fetchAuthUserGet } from '../../serviceAuth/authUser';
 import { fetchAddStaffUID, fetchDeleteStaffUID, fetchStaffUIDAuth } from "../../serviceAdmin/staffUID";
-import { fetchDeleteUser, fetchDisableUser, fetchIsUserDisabled, fetchUserList } from "../../serviceAdmin/staffList";
-import { fetchAddUserNumber, fetchUserNumberGet, fetchUserNumberGetAll } from "../../serviceAdmin/userNumber";
+import { fetchAddUser, fetchDeleteUser, fetchDisableUser, fetchIsUserDisabled, fetchUpdateUser, fetchUserList } from "../../serviceAdmin/staffList";
+import { fetchAddUserNumber, fetchUserNumberGetAll } from "../../serviceAdmin/userNumber";
 import useFormStore from "../../common/useFormStore";
+import { password } from "bun";
 
 type AdminHomeStore = {
   user: User | undefined;
@@ -30,26 +31,28 @@ const defaultAdminHomeStore: AdminHomeStore = {
 
 export default function AdminHome() {
   const [configStore, setConfigStore] = createStore(defaultAdminHomeStore);
-  const [selectedCustomer, setSelectedCustomer] = createSignal<number | undefined>();
-  const [selectedStaff, setSelectedStaff] = createSignal<number | undefined>();
+  const [selectedCustomer, setSelectedCustomer] = createSignal<User | undefined>();
+  const [selectedStaff, setSelectedStaff] = createSignal<User | undefined>();
+  const [uidToUpdate, setUidToUpdate] = createSignal<string | undefined>();
   const { formStore, setFormStore } = useFormStore();
   const hasFormErrors = () => {
-    return (!!formStore.errors.email || !!formStore.errors.phone || !!formStore.errors.password || !!formStore.errors.confirmPassword) ||
-      (!formStore.fields.email || !formStore.fields.phone || !formStore.fields.password || !formStore.fields.confirmPassword);
+    return (!!formStore.errors.email || !!formStore.errors.phone || !!formStore.errors.password) ||
+      (!formStore.fields.email || !formStore.fields.phone || !formStore.fields.password);
+  }
+  const hasUpdateFormErrors = () => {
+    return (!!formStore.errors.email || !!formStore.errors.phone) ||
+      (!formStore.fields.email || !formStore.fields.phone);
   }
 
   async function configInit() {
     const user = await fetchAuthUserGet();
     setConfigStore('user', user);
 
-    const staffList = await fetchUserList("staff");
-    setConfigStore('staffList', staffList);
-
-    const customerList = await fetchUserList("customer");
-    setConfigStore('customerList', customerList);
-
     const phoneNumberList = await fetchUserNumberGetAll();
     setConfigStore('phoneNumberList', phoneNumberList);
+
+    const staffList = await filterStaff();
+    const customerList = await filterCustomers();
 
     const inactiveCustomersPromises = customerList.map(async (customer) => {
       var isDisabled = false;
@@ -87,59 +90,140 @@ export default function AdminHome() {
     await configInit();
   });
 
-  const addUser = async () => {
+  const filterCustomers = async (): Promise<User[]> => {
+    const list = await fetchUserList("customer");
+    var filteredList: User[] = new Array;
 
-    await configInit();
+    list.forEach(customer => {
+      const customerPhone = configStore.phoneNumberList.find((u) => u.uid === customer.uid)?.number ?? "No Phone Number Found";
+      if (customer.name.toLowerCase().includes(formStore.searchCustomer.name.toLowerCase()) && 
+            customer.email.toLowerCase().includes(formStore.searchCustomer.email.toLowerCase()) &&
+            customerPhone.toLowerCase().includes(formStore.searchCustomer.phone.toLowerCase())) {
+        
+        filteredList.push(customer);
+      }
+    });
+
+    setConfigStore('customerList', filteredList);
+    return filteredList;
   }
 
-  const updateUser = async () => {
+  const filterStaff = async (): Promise<User[]> => {
+    const list = await fetchUserList("staff");
+    var filteredList: User[] = new Array;
 
+    list.forEach(staff => {
+      const staffPhone = configStore.phoneNumberList.find((u) => u.uid === staff.uid)?.number ?? "No Phone Number Found";
+      if (staff.name.toLowerCase().includes(formStore.searchStaff.name.toLowerCase()) && 
+            staff.email.toLowerCase().includes(formStore.searchStaff.email.toLowerCase()) &&
+            staffPhone.toLowerCase().includes(formStore.searchStaff.phone.toLowerCase())) {
+        
+        filteredList.push(staff);
+      }
+    });
+
+    setConfigStore('staffList', filteredList);
+    return filteredList;
+  }
+
+  const setCustomer = (user: User) => {
+    if (selectedCustomer()?.uid === user.uid) {
+      setSelectedCustomer(undefined);
+    }
+    else {
+      setSelectedCustomer(user);
+    }
+  }
+  
+  const setStaff = (user: User) => {
+    if (selectedStaff()?.uid === user.uid) {
+      setSelectedStaff(undefined);
+    }
+    else {
+      setSelectedStaff(user);
+    }
+  }
+
+  const refreshForm = () => {
+    setFormStore(prev => ({ ...prev, fields: { name: "", email: "", password: "", confirmPassword: "", phone: "" } }));
+    setUidToUpdate(undefined);
+  }
+
+  const addUser = async () => {
+    var user: User = {
+      uid: "0",
+      name: formStore.fields.name,
+      email: formStore.fields.email,
+      email_verified: true,
+    };
+    const uid = await fetchAddUser(user, formStore.fields.password);
+    console.log("Adding number " + formStore.fields.phone + " to " + uid );
+    await fetchAddUserNumber(uid, formStore.fields.phone);
     await configInit();
+    refreshForm();
+  }
+
+  const startUpdateUser = () => {
+    setUidToUpdate(selectedCustomer().uid);
+    const customerPhone = configStore.phoneNumberList.find((u) => u.uid === selectedCustomer().uid)?.number ?? "";
+    setFormStore(prev => ({ ...prev, fields: { name: selectedCustomer().name, email: selectedCustomer().email, password: "", confirmPassword: "", phone: customerPhone } }));
+  }
+  const startUpdateStaff = () => {
+    setUidToUpdate(selectedStaff().uid);
+    const customerPhone = configStore.phoneNumberList.find((u) => u.uid === selectedStaff().uid)?.number ?? "";
+    setFormStore(prev => ({ ...prev, fields: { name: selectedStaff().name, email: selectedStaff().email, password: "", confirmPassword: "", phone: customerPhone } }));
+  }
+  const updateUser = async () => {
+    const uid = uidToUpdate();
+    var user: User = {
+      uid: uid,
+      name: formStore.fields.name,
+      email: formStore.fields.email,
+      email_verified: true,
+    };
+    await fetchUpdateUser(user);
+    await fetchAddUserNumber(uid, formStore.fields.phone);
+    await configInit();
+    refreshForm();
   }
 
   const promoteStaff = async () => {
-    await fetchAddStaffUID(configStore.customerList[selectedCustomer()].uid);
+    await fetchAddStaffUID(selectedCustomer().uid);
     await configInit();
   };
 
   const deactivateUser = async () => {
-    await fetchDisableUser(configStore.customerList[selectedCustomer()].uid, true);
+    await fetchDisableUser(selectedCustomer().uid, true);
     await configInit();
   }
 
   const activateUser = async () => {
-    await fetchDisableUser(configStore.customerList[selectedCustomer()].uid, false);
+    await fetchDisableUser(selectedCustomer().uid, false);
     await configInit();
   }
 
   const deleteUser = async() => {
-    await fetchDeleteUser(configStore.customerList[selectedCustomer()].uid)
+    await fetchDeleteUser(selectedCustomer().uid)
     await configInit();
   };
 
 
   const demoteStaff = async() => {
-    await fetchDeleteStaffUID(configStore.staffList[selectedStaff()].uid)
+    await fetchDeleteStaffUID(selectedStaff().uid)
     await configInit();
   }
-
-  const updateStaff = async () => {
-
-    await configInit();
-  }
-
   const deactivateStaff = async () => {
-    await fetchDisableUser(configStore.staffList[selectedStaff()].uid, true);
+    await fetchDisableUser(selectedStaff().uid, true);
     await configInit();
   }
 
   const activateStaff = async () => {
-    await fetchDisableUser(configStore.staffList[selectedStaff()].uid, false);
+    await fetchDisableUser(selectedStaff().uid, false);
     await configInit();
   }
 
   const deleteStaff = async () => {
-    await fetchDeleteUser(configStore.staffList[selectedStaff()].uid)
+    await fetchDeleteUser(selectedStaff().uid)
     await configInit();
   }
 
@@ -162,13 +246,50 @@ export default function AdminHome() {
                         <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">Phone Number</div>
                       </div>
                     </div>
+                    <div class="table-header-group bg-gray-100">
+                      <div class="table-row">
+                        <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">
+                          <input
+                            type="text"
+                            required
+                            placeholder={"Search Name"}
+                            autocomplete="name"
+                            value={formStore.searchCustomer.name}
+                            onInput={(e) => { setFormStore(prev => ({ ...prev, searchCustomer: { ...prev.searchCustomer, name: e.currentTarget.value } })); filterCustomers() }}
+                            class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                          />
+                        </div>
+                        <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">
+                          <input
+                            type="text"
+                            required
+                            placeholder={"Search Email"}
+                            autocomplete="email"
+                            value={formStore.searchCustomer.email}
+                            onInput={(e) => { setFormStore(prev => ({ ...prev, searchCustomer: { ...prev.searchCustomer, email: e.currentTarget.value } })); filterCustomers() }}
+                            class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                          />
+                        </div>
+                        <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">
+                          <input
+                            type="text"
+                            required
+                            placeholder={"Search Phone"}
+                            autocomplete="phone"
+                            value={formStore.searchCustomer.phone}
+                            onInput={(e) => { setFormStore(prev => ({ ...prev, searchCustomer: { ...prev.searchCustomer, phone: e.currentTarget.value } })); filterCustomers() }}
+                            class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                          />
+                        </div>
+                      </div>
+                    </div>
                     <div class="table-row-group">
                       <For each={configStore.customerList} fallback={<div>Loading...</div>}>
                         {(user, index) => {
                           const userPhone = configStore.phoneNumberList.find((u) => u.uid === user.uid)?.number ?? 'No Phone Number Found';
                           return (
-                            <div class={`table-row ${selectedCustomer() === index() ? 'bg-blue-100' : 'hover:bg-gray-50'}
-                                cursor-pointer`} onClick={() => {setSelectedCustomer(index); configInit();}}>
+                            <div class={`table-row ${selectedCustomer()?.uid === user.uid ? 'bg-blue-100' : 'hover:bg-gray-50'}
+                                cursor-pointer`} onClick={() => {setCustomer(user); configInit();}}>
                               <div class="table-cell px-4 py-2 border-t">{user.name}</div>
                               <div class="table-cell px-4 py-2 border-t">{user.email}</div>
                               <div class="table-cell px-4 py-2 border-t">{userPhone}</div>
@@ -180,12 +301,11 @@ export default function AdminHome() {
                   </div>
                 </div>
                   <div class="flex justify-between mt-4">
-                    <button class="flex-1 mr-2 text-sm font-semibold text-green-600 hover:text-green-800 py-2 px-4 rounded-lg bg-gray-200 shadow" onClick={addUser}>Add User</button>
                     <button class={`flex-1 mx-2 text-sm font-semibold text-blue-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-blue-800'} shadow`}
-                      disabled={selectedCustomer() === undefined} onClick={updateUser}>Update User</button>
+                      disabled={selectedCustomer() === undefined} onClick={startUpdateUser}>Update User</button>
                     <button class={`flex-1 mx-2 text-sm font-semibold text-yellow-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-yellow-800'} shadow`}
                       disabled={selectedCustomer() === undefined} onClick={promoteStaff}>Promote User</button>
-                    {configStore.inactiveCustomers.find((u) => u === configStore.customerList[selectedCustomer() ?? 0].uid) ?
+                    {configStore.inactiveCustomers.find((u) => u === selectedCustomer().uid) ?
                       (
                         <button class={`flex-1 mx-2 text-sm font-semibold text-green-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-green-800'} shadow`}
                           disabled={selectedCustomer() === undefined} onClick={activateUser}>Activate User</button>
@@ -211,13 +331,50 @@ export default function AdminHome() {
                         <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">Phone Number</div>
                       </div>
                     </div>
+                    <div class="table-header-group bg-gray-100">
+                      <div class="table-row">
+                        <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">
+                          <input
+                            type="text"
+                            required
+                            placeholder={"Search Name"}
+                            autocomplete="name"
+                            value={formStore.searchStaff.name}
+                            onInput={(e) => { setFormStore(prev => ({ ...prev, searchStaff: { ...prev.searchStaff, name: e.currentTarget.value } })); filterStaff() }}
+                            class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                          />
+                        </div>
+                        <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">
+                          <input
+                            type="text"
+                            required
+                            placeholder={"Search Email"}
+                            autocomplete="email"
+                            value={formStore.searchStaff.email}
+                            onInput={(e) => { setFormStore(prev => ({ ...prev, searchStaff: { ...prev.searchStaff, email: e.currentTarget.value } })); filterStaff() }}
+                            class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                          />
+                        </div>
+                        <div class="table-cell px-4 py-2 font-bold text-left text-gray-700">
+                          <input
+                            type="text"
+                            required
+                            placeholder={"Search Phone"}
+                            autocomplete="phone"
+                            value={formStore.searchStaff.phone}
+                            onInput={(e) => { setFormStore(prev => ({ ...prev, searchStaff: { ...prev.searchStaff, phone: e.currentTarget.value } })); filterStaff() }}
+                            class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                          />
+                        </div>
+                      </div>
+                    </div>
                     <div class="table-row-group">
-                    <For each={configStore.staffList} fallback={<div>Loading...</div>}>
+                      <For each={configStore.staffList} fallback={<div>Loading...</div>}>
                         {(user, index) => {
                           const userPhone = configStore.phoneNumberList.find((u) => u.uid === user.uid)?.number ?? 'No Phone Number Found';
                           return (
-                            <div class={`table-row ${selectedStaff() === index() ? 'bg-blue-100' : 'hover:bg-gray-50'}
-                                cursor-pointer`} onClick={() => setSelectedStaff(index)}>
+                            <div class={`table-row ${selectedStaff()?.uid === user.uid ? 'bg-blue-100' : 'hover:bg-gray-50'}
+                                cursor-pointer`} onClick={() => {setStaff(user); configInit();}}>
                               <div class="table-cell px-4 py-2 border-t">{user.name}</div>
                               <div class="table-cell px-4 py-2 border-t">{user.email}</div>
                               <div class="table-cell px-4 py-2 border-t">{userPhone}</div>
@@ -229,11 +386,11 @@ export default function AdminHome() {
                   </div>
                 </div>
                   <div class="flex justify-between mt-4">
-                    <button class={`flex-1 mx-2 text-sm font-semibold text-yellow-600 py-2 px-4 rounded-lg ${selectedStaff() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-yellow-800'} shadow`}
+                  <button class={`flex-1 mx-2 text-sm font-semibold text-yellow-600 py-2 px-4 rounded-lg ${selectedStaff() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-yellow-800'} shadow`}
                       disabled={selectedStaff() === undefined} onClick={demoteStaff}>Demote Staff User</button>
                     <button class={`flex-1 mx-2 text-sm font-semibold text-blue-600 py-2 px-4 rounded-lg ${selectedStaff() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-blue-800'} shadow`}
-                      disabled={selectedStaff() === undefined} onClick={updateStaff}>Update Staff User</button>
-                    {configStore.inactiveStaff.find((u) => u === configStore.staffList[selectedStaff() ?? 0].uid) ?
+                      disabled={selectedStaff() === undefined} onClick={startUpdateStaff}>Update Staff User</button>
+                    {configStore.inactiveStaff.find((u) => u === selectedStaff().uid) ?
                       (
                         <button class={`flex-1 mx-2 text-sm font-semibold text-green-600 py-2 px-4 rounded-lg ${selectedStaff() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-green-800'} shadow`}
                           disabled={selectedStaff() === undefined} onClick={activateStaff}>Activate Staff User</button>
@@ -249,34 +406,32 @@ export default function AdminHome() {
 
             <div class="flex justify-center items-start space-x-8 px-8 py-4">
               <form action="javascript:void(0)" method="post">
-                <div class="flex flex-col items-center">
-                  <input
-                  type="text"
+                <input
+                type="text"
+                required
+                placeholder={"Full name"}
+                autocomplete="name"
+                value={formStore.fields.name}
+                onInput={(e) => setFormStore(prev => ({ ...prev, fields: { ...prev.fields, name: e.currentTarget.value } }))}
+                class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                />
+                <input
+                  type="email"
                   required
-                  placeholder={"Full name"}
-                  autocomplete="name"
-                  value={formStore.fields.name}
-                  onInput={(e) => setFormStore(prev => ({ ...prev, fields: { ...prev.fields, name: e.currentTarget.value } }))}
-                  class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500 autofill:bg-transparent"
+                  placeholder={"Email address"}
+                  autocomplete="email"
+                  value={formStore.fields.email}
+                  onInput={(e) => {
+                    setFormStore(prev => ({ ...prev, fields: { ...prev.fields, email: e.currentTarget.value } }));
+                    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(e.currentTarget.value)) {
+                      setFormStore(prev => ({ ...prev, errors: { ...prev.errors, email: "Invalid email address" } }));
+                    } else {
+                      setFormStore(prev => ({ ...prev, errors: { ...prev.errors, email: "" } }));
+                    }
+                  }}
+                  class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none border focus:border-indigo-500 autofill:bg-transparent"
                   />
-                  <input
-                    type="email"
-                    required
-                    placeholder={"Email address"}
-                    autocomplete="email"
-                    value={formStore.fields.email}
-                    onInput={(e) => {
-                      setFormStore(prev => ({ ...prev, fields: { ...prev.fields, email: e.currentTarget.value } }));
-                      if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(e.currentTarget.value)) {
-                        setFormStore(prev => ({ ...prev, errors: { ...prev.errors, email: "Invalid email address" } }));
-                      } else {
-                        setFormStore(prev => ({ ...prev, errors: { ...prev.errors, email: "" } }));
-                      }
-                    }}
-                    class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none border focus:border-indigo-500 autofill:bg-transparent"
-                    />
                   {formStore.errors.email && <div class="text-sm mb-2 self-start text-red-500">{formStore.errors.email}</div>}
-                  {/* Andrew's code start. */}
                   <input
                     type="phone"
                     required
@@ -285,7 +440,7 @@ export default function AdminHome() {
                     value={formStore.fields.phone}
                     onInput={(e) => {
                       setFormStore(prev => ({ ...prev, fields: { ...prev.fields, phone: e.currentTarget.value } }));
-                      if (!/^\d{11}$/.test(e.currentTarget.value)) {
+                      if (!/^\d{10}$/.test(e.currentTarget.value)) {
                         setFormStore(prev => ({ ...prev, errors: { ...prev.errors, phone: "Phone number must contain 10 digits." } }));
                       } else {
                         setFormStore(prev => ({ ...prev, errors: { ...prev.errors, phone: "" } }));
@@ -294,36 +449,48 @@ export default function AdminHome() {
                     class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none border focus:border-indigo-500 autofill:bg-transparent"
                     />
                   {formStore.errors.phone && <div class="text-sm mb-2 self-start text-red-500">{formStore.errors.phone}</div>}
-                  {/* Andrew's code end. */}
-                  <input
-                    type="password"
-                    required
-                    placeholder="Password"
-                    autocomplete="password"
-                    value={formStore.fields.password}
-                    onInput={(e) => {
-                      setFormStore(prev => ({ ...prev, fields: { ...prev.fields, password: e.currentTarget.value } }));
-                      if (e.currentTarget.value.length < 8 ||
-                        !/[A-Z]/.test(e.currentTarget.value) ||
-                        !/[a-z]/.test(e.currentTarget.value) ||
-                        !/[0-9]/.test(e.currentTarget.value) ||
-                        !/[!@#$%^&*]/.test(e.currentTarget.value)) {
-                        setFormStore(prev => ({ ...prev, errors: { ...prev.errors, password: "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character" } }));
-                      } else {
-                        setFormStore(prev => ({ ...prev, errors: { ...prev.errors, password: "" } }));
-                      }
+                  { uidToUpdate() === undefined ? (
+                    <input
+                      type="password"
+                      required
+                      placeholder="Password"
+                      autocomplete="password"
+                      value={formStore.fields.password}
+                      onInput={(e) => {
+                        setFormStore(prev => ({ ...prev, fields: { ...prev.fields, password: e.currentTarget.value } }));
+                        if (e.currentTarget.value.length < 8 ||
+                          !/[A-Z]/.test(e.currentTarget.value) ||
+                          !/[a-z]/.test(e.currentTarget.value) ||
+                          !/[0-9]/.test(e.currentTarget.value) ||
+                          !/[!@#$%^&*]/.test(e.currentTarget.value)) {
+                          setFormStore(prev => ({ ...prev, errors: { ...prev.errors, password: "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character" } }));
+                        } else {
+                          setFormStore(prev => ({ ...prev, errors: { ...prev.errors, password: "" } }));
+                        }
 
-                      if (formStore.fields.password !== formStore.fields.confirmPassword) {
-                        setFormStore(prev => ({ ...prev, errors: { ...prev.errors, confirmPassword: "Passwords must match" } }));
-                      } else {
-                        setFormStore(prev => ({ ...prev, errors: { ...prev.errors, confirmPassword: "" } }));
-                      }
-                    }}
-                    class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500"
-                  />
+                        if (formStore.fields.password !== formStore.fields.confirmPassword) {
+                          setFormStore(prev => ({ ...prev, errors: { ...prev.errors, confirmPassword: "Passwords must match" } }));
+                        } else {
+                          setFormStore(prev => ({ ...prev, errors: { ...prev.errors, confirmPassword: "" } }));
+                        }
+                      }}
+                      class="border-x-0 border-t-0 border-b bg-transparent w-full my-2 py-2 px-4 focus:ring-0 focus:outline-none focus:border-indigo-500"
+                    />
+                    ) :
+                    <>
+                    </>
+                  }
                   {formStore.errors.password && <div class="text-sm mb-2 self-start text-red-500">{formStore.errors.password}</div>}
-                </div>
+                  <div class="flex justify-between mt-4">
+                    { uidToUpdate() === undefined ? (
+                        <button class={`flex-1 mx-2 text-sm font-semibold text-green-600 py-2 px-4 rounded-lg ${hasFormErrors() ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-green-800'} shadow`} disabled={hasFormErrors()} onClick={addUser}>Add User</button>
+                      ) :
+                        <button class={`flex-1 mx-2 text-sm font-semibold text-blue-600 py-2 px-4 rounded-lg ${hasUpdateFormErrors() ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-blue-800'} shadow`} disabled={hasUpdateFormErrors()} onClick={updateUser}>Update User</button>
+                    }
+                    <button class="flex-1 mx-2 text-sm font-semibold text-red-600 py-2 px-4 rounded-lg bg-gray-200 hover:text-red-800 shadow" onClick={refreshForm}>Cancel</button>
+                  </div>
               </form>
+              
             </div>
           </>
         ) :

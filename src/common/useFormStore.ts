@@ -16,6 +16,18 @@ export default function useFormStore() {
       submission: '',
       phone: '',
     },
+    // Andrew's code start.
+    searchCustomer: {
+      name: '',
+      phone: '',
+      email: '',
+    },
+    searchStaff: {
+      name: '',
+      phone: '',
+      email: '',
+    },
+    // Andrew's code end.
     result: '',
   });
 

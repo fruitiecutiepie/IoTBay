@@ -50,8 +50,9 @@ export const userListFetchHandler: FetchHandler = {
       const event = reqBody.event;
 
       if (event === "add" && reqBody.user && reqBody.ps) {
+        const uid = await addUser(reqBody.user, reqBody.ps);
         return Promise.resolve(
-          new Response(JSON.stringify(addUser(reqBody.user, reqBody.ps)), { status: 200, headers })
+          new Response(uid, { status: 200, headers })
         );
       }
       else if (event === "delete" && reqBody.uid) {
@@ -61,9 +62,10 @@ export const userListFetchHandler: FetchHandler = {
           new Response(undefined, { status: 200, headers })
         );
       }
-      else if (event === "update" && reqBody.user && reqBody.ps) {
+      else if (event === "update" && reqBody.user) {
+        console.error("Sending update request to model");
         return Promise.resolve(
-          new Response(JSON.stringify(updateUser(reqBody.user, reqBody.ps)), { status: 200, headers })
+          new Response(JSON.stringify(updateUser(reqBody.user)), { status: 200, headers })
         );
       }
       else if (event === "disable" && reqBody.uid && reqBody.disable != undefined) {

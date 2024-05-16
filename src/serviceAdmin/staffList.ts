@@ -41,8 +41,8 @@ export const fetchDeleteUser = async (uid: string): Promise<void> => {
   });
 }
 
-export const fetchAddUser = async (user: User, password: string): Promise<void> => {
-  await fetch(`http://localhost:${config.serverPort}/auth/fb`, {
+export const fetchAddUser = async (user: User, password: string): Promise<string> => {
+  const res = await fetch(`http://localhost:${config.serverPort}/auth/fb`, {
     method: 'POST',
     body: JSON.stringify({
       uid: undefined,
@@ -51,15 +51,15 @@ export const fetchAddUser = async (user: User, password: string): Promise<void> 
       event: "add"
     } as ReqBody)
   });
+
+  return await res.text();
 }
 
-export const fetchUpdateUser = async (uid: string, user: User, password: string): Promise<void> => {
+export const fetchUpdateUser = async (user: User): Promise<void> => {
   await fetch(`http://localhost:${config.serverPort}/auth/fb`, {
     method: 'POST',
     body: JSON.stringify({
-      uid: uid,
       user: user,
-      ps: password,
       event: "update"
     } as ReqBody)
   });

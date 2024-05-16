@@ -39,22 +39,24 @@ export async function deleteUser(uid: string): Promise<void> {
       });
 }
 
-export async function addUser(user: User, ps: string): Promise<UserRecord> {
-    return await admin.auth().createUser({
+export async function addUser(user: User, ps: string): Promise<string> {
+    const newUser = await admin.auth().createUser({
         displayName: user.name,
         email: user.email,
         emailVerified: true,
         password: ps,
         disabled: false
     });
+
+    return newUser.uid;
 }
 
-export async function updateUser(user: User, ps: string): Promise<UserRecord> {
+export async function updateUser(user: User): Promise<UserRecord> {
+    console.error("Updating user with uid: " + user.uid);
     return await admin.auth().updateUser(user.uid, {
         displayName: user.name,
         email: user.email,
         emailVerified: user.email_verified,
-        password: ps,
     });
 }
 
