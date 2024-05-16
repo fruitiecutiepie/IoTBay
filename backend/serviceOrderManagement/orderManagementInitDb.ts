@@ -17,16 +17,15 @@ export const OrderManagementModuleinitDb = () => {
       orderId TEXT NOT NULL,
       productId TEXT NOT NULL,
       quantity INTEGER NOT NULL,
-      price INTEGER NOT NULL,
-      FOREIGN KEY (orderId) REFERENCES orders(orderId)
+      price INTEGER NOT NULL
     );
   `)
 
   db.exec(`
-    INSERT INTO orders (orderId, userId, status, createdAt, updatedAt)
-    VALUES ('123', '123', 'saved', '2023-05-04T13:00:00Z', '2023-05-06T15:00:00Z');
+    INSERT OR REPLACE INTO orders (orderId, userId, status, createdAt, updatedAt)
+    VALUES ('123', '123', 'saved', '2023-05-04T13:00:00Z', '2023-05-06T15:00:00Z'),
+    ('832', '233', 'saved', '2023-05-04T13:00:00Z', '2023-05-06T15:00:00Z'),
+    ('013', '133', 'saved', '2023-05-04T13:00:00Z', '2023-05-06T15:00:00Z');
   `)
 }
 
-// Initialize the database
-OrderManagementModuleinitDb();

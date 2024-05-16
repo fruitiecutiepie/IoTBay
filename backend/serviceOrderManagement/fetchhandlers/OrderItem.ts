@@ -8,7 +8,7 @@ type ReqBody = {
 }
 
 export const orderItemFetchHandler: FetchHandler = {
-    "/OrderItem": {
+    "/orderItem": {
       GET: async (req: Request, headers: Headers) => {
         const url = new URL(req.url);
         const orderItemId = url.searchParams.get("itemId");

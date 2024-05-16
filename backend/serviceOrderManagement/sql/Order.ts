@@ -26,17 +26,17 @@ export type Order = {
   export const OrderInsertOrUpdate = (OrderDetail: Order): Order => {
     const query = db.query(
       `INSERT OR REPLACE INTO orders (
-        id,
+        orderId,
         userId,
         status,
         createdAt,
         updatedAt
       ) VALUES (
-        $id, $userId, $status, $createdAt, $updatedAt
+        $orderId, $userId, $status, $createdAt, $updatedAt
       );`
     );
     return query.get({
-      $id: OrderDetail.orderId,
+      $orderId: OrderDetail.orderId,
       $userId: OrderDetail.userId,
       $status: OrderDetail.status,
       $createdAt: OrderDetail.createdAt,
@@ -49,4 +49,12 @@ export type Order = {
       `DELETE FROM orders;`
     );
     query.run();
+  }
+
+    
+  export const OrderDeleteSpecific = (orderId:string): void => {
+    const query = db.query(
+      `DELETE FROM orders WHERE orderId = ?;`
+    );
+    query.run(orderId);
   }

@@ -1,14 +1,14 @@
 import { FetchHandler } from "../..";
-import { Order,OrderGet, OrderGetAll, OrderInsertOrUpdate, OrderDelete } from "../sql/Order";
+import { Order,OrderGet, OrderGetAll, OrderInsertOrUpdate, OrderDelete, OrderDeleteSpecific } from "../sql/Order";
 
 type ReqBody = {
   Order: Order | undefined;
   orderId: string | undefined;
-  event: "add" | "delete";
+  event: "add" | "delete"| "deleteSpecific";
 }
 
 export const orderFetchHandler: FetchHandler = {
-    "/Order": {
+    "/order": {
       GET: async (req: Request, headers: Headers) => {
         const url = new URL(req.url);
         const orderId = url.searchParams.get("id");
@@ -37,7 +37,14 @@ export const orderFetchHandler: FetchHandler = {
           return Promise.resolve(
         new Response(undefined, { status: 200, headers })
       ); 
-      } else {
+      } 
+        else if (reqBody.event==="deleteSpecific" && reqBody.orderId){
+        await OrderDeleteSpecific(reqBody.orderId);
+        return Promise.resolve(
+        new Response(undefined, { status: 200, headers })
+      ); 
+        }
+      else {
         if (!reqBody.Order) {
           console.error(`/order: order data is required`);
           return Promise.resolve(

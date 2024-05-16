@@ -4,8 +4,8 @@ import { OrderItem } from "../../dataTypes";
 
 type ReqBody = {
     Order: Order | undefined;
-    orderId: number | undefined;
-    event: "add" | "delete";
+    orderId: string | undefined;
+    event: "add" | "delete" | "deleteSpecific";
   }
   
   // Function to fetch all Order
@@ -34,11 +34,20 @@ type ReqBody = {
   };
   
   // Function to delete a Order
-  export const deletecarddetails = async (): Promise<void> => {
+  export const deleteOrder = async (): Promise<void> => {
     const res = await fetch(`http://localhost:${config.serverPort}/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }, // Specify content type
       body: JSON.stringify({ event: "delete" } as ReqBody) // Provide request body
+    });
+    if (!res.ok) throw new Error(`Failed to delete order`);
+  };
+
+  export const deleteSpecificOrder = async (orderId:string): Promise<void> => {
+    const res = await fetch(`http://localhost:${config.serverPort}/order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }, // Specify content type
+      body: JSON.stringify({ event: "deleteSpecific", orderId:orderId } as ReqBody) // Provide request body
     });
     if (!res.ok) throw new Error(`Failed to delete order`);
   };

@@ -12,7 +12,7 @@ const defaultHomeStore: HomeStore = {
   user: undefined,
 };
 
-const Home = () => {
+export default function Home () {
   const [configStore, setConfigStore] = createStore(defaultHomeStore);
   const navigate = useNavigate();
 
@@ -54,11 +54,6 @@ const Home = () => {
           </p>
         </div>
       </Show>
-      <div class="mt-8 flex space-x-4">
-        <button onClick={() => navigate("/login")} class="btn">Login</button>
-        <button onClick={() => navigate("/register")} class="btn">Register</button>
-        <button onClick={() => navigate("/order")} class="btn">Order</button>
-      </div>
     </div>
   );
 }
