@@ -113,6 +113,14 @@ const App: Component = () => {
             {/* Andrew's code start. */}
             { configStore.userStaffType==="Admin" || configStore.userStaffType==="SysAdmin" ? (
                 <>
+                  <Link href="/ordermanagement" class="px-4 py-2">
+                    <span class="flex items-center">
+                      <span class="mr-1 no-underline hover:underline">Order Management</span>
+                      <span class="bg-red-500 text-white rounded-full text-xs px-1">
+                        {/* {cartItems()} */}
+                      </span>
+                    </span>
+                  </Link>
                   <li class="py-2 px-4">
                     <Link href="/admin" class="no-underline hover:underline">
                       Admin
@@ -131,6 +139,14 @@ const App: Component = () => {
               ) :
               configStore.user ? (
                 <>
+                  <Link href="/ordermanagement" class="px-4 py-2">
+                    <span class="flex items-center">
+                      <span class="mr-1 no-underline hover:underline">Order Management</span>
+                      <span class="bg-red-500 text-white rounded-full text-xs px-1">
+                        {/* {cartItems()} */}
+                      </span>
+                    </span>
+                  </Link>
                   <li class="py-2 px-4">
                     <Link href="/settings" class="no-underline hover:underline">
                       Settings
@@ -146,11 +162,21 @@ const App: Component = () => {
                   </li>
                 </>
               ) :
-              <li class="py-2 px-4">
-                <Link href="/login" class="no-underline hover:underline">
-                  Login
+              <div class="flex items-center">
+                <Link href="/ordermanagement" class="px-4 py-2">
+                  <span class="flex items-center">
+                    <span class="mr-1 no-underline hover:underline">Order Management</span>
+                    <span class="bg-red-500 text-white rounded-full text-xs px-1">
+                      {/* {cartItems()} */}
+                    </span>
+                  </span>
                 </Link>
-              </li>
+                <li class="py-2 px-4">
+                  <Link href="/login" class="no-underline hover:underline">
+                    Login
+                  </Link>
+                </li>
+              </div>
             }
           </div>
         </ul>

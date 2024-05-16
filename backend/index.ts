@@ -5,6 +5,7 @@ import { authFetchHandler } from "./serviceAuth/authFetchHandler";
 import { staffFetchHandler } from "./serviceAdmin/staffFetchHandler";
 import { customerManagementFetchHandler } from "./serviceCustomerManagement/customerManagementFetchHandler";
 import { PmoduleFetchHandler } from "./servicePayments/PmoduleFecthHandler";
+import { orderManagementFetchHandler } from "./serviceOrderManagement/orderManagementFetchHandler";
 
 const SERVER_PORT = 46822;
 
@@ -18,8 +19,10 @@ const fetchHandlers: FetchHandler = {
   ...authFetchHandler,
   ...staffFetchHandler, // 'Registers' the staff fetch handler.
   ...customerManagementFetchHandler,
-  ...PmoduleFetchHandler
+  ...PmoduleFetchHandler,
+  ...orderManagementFetchHandler
 };
+
 
 (() => {
   initDb();

@@ -2,6 +2,7 @@ import { Show, onMount } from 'solid-js';
 import { User } from '../../dataTypes';
 import { createStore } from 'solid-js/store';
 import { fetchAuthUserGet } from '../serviceAuth/authUser';
+import { useNavigate } from "@solidjs/router";
 
 type HomeStore = {
   user: User | undefined;
@@ -9,17 +10,18 @@ type HomeStore = {
 
 const defaultHomeStore: HomeStore = {
   user: undefined,
-}
+};
 
-export default function Home() {
+export default function Home () {
   const [configStore, setConfigStore] = createStore(defaultHomeStore);
+  const navigate = useNavigate();
 
   onMount(async () => {
     const user = await fetchAuthUserGet();
     setConfigStore('user', user);
   });
-
   return (
+    
     <div
       class="text-gray-700 p-8 flex flex-col justify-center items-center"
     >

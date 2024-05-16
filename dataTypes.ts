@@ -47,3 +47,19 @@ export type Payment = {
   amount: number;
   date: number; 
 }
+
+export type Order = {
+  orderId: string;
+  userId: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type OrderItem = {
+  itemId: string;
+  orderId: string;
+  productId: string;
+  quantity: string;
+  price: string;
+}
