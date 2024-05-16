@@ -1,15 +1,8 @@
-import { createOrder } from "./fetchHandlers/createOrder";
-import { getOrderDetails } from "./fetchHandlers/getOrderDetails";
-import { getOrderHistory } from "./fetchHandlers/getOrderHistory";
-import { searchOrders } from "./fetchHandlers/searchOrders";
-import { updateOrder } from "./fetchHandlers/updateOrder";
-import { cancelOrder } from "./fetchHandlers/cancelOrder";
+import { FetchHandler } from "..";
+import { orderFetchHandler} from "./fetchHandlers/Order"; 
+import { orderItemFetchHandler } from "./fetchHandlers/OrderItem";
 
-export const orderManagementFetchHandler = {
-  createOrder,
-  getOrderDetails,
-  getOrderHistory,
-  searchOrders,
-  updateOrder,
-  cancelOrder,
-};
+export const orderManagementFetchHandler: FetchHandler = {
+    ... orderFetchHandler, 
+    ...orderItemFetchHandler,
+  }

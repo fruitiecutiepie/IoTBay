@@ -1,7 +1,7 @@
 import { Database } from "bun:sqlite";
 
 import { authInitDb } from "../serviceAuth/authInitDb";
-import { initOrderManagementDb } from "../serviceOrderManagement/orderManagementInitDb";
+import { OrderManagementModuleinitDb } from "../serviceOrderManagement/orderManagementInitDb";
 
 
 const DB_NAME = "iotbay.db";
@@ -14,5 +14,5 @@ export const initDb = () => {
   );
 
   authInitDb();
-  initOrderManagementDb();
+  OrderManagementModuleinitDb();
 }
