@@ -47,8 +47,8 @@ function PaymentForm() {
     } else {
       setErrors(errors => ({ ...errors, expiryDate: '' }));
     } 
-    if (expiryDate > 1230 && expiryDate < 1224) {
-      setErrors(errors => ({ ...errors, expiryDate: 'Expiry date cannot be higher than 12/30 or lower than 05/24' }));
+    if (expiryDate > 1230) {
+      setErrors(errors => ({ ...errors, expiryDate: 'Expiry date cannot be higher than 12/30' }));
     } else {
       setErrors(errors => ({ ...errors, expiryDate: '' }));
       setExpiryDate(expiryDate.toString());
@@ -56,7 +56,7 @@ function PaymentForm() {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
 
     // Check if any errors are present
     if (errors().creditCard || errors().expiryDate) {

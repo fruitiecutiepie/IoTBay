@@ -3,7 +3,7 @@ import { Link, useNavigate, useRoutes } from '@solidjs/router';
 
 import { routes } from './routes';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { setUser } from './common/userSignal';
+import { setUser, userSignal } from './common/userSignal';
 import { auth } from './common/firebaseClientInit';
 import { fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession';
 import { fetchAuthUserDelete, fetchAuthUserGet, fetchAuthUserInsertOrUpdate } from './serviceAuth/authUser';
@@ -29,8 +29,11 @@ const App: Component = () => {
 
   const logOut = () => {
     signOut(auth)
-      .then(() => {
+      .then(async () => {
         console.log('User signed out');
+        setConfigStore('user', undefined);
+        await fetchAuthUserDelete();
+        setUser(null);
         navigate('/');
       })
       .catch((err) => {
@@ -42,11 +45,12 @@ const App: Component = () => {
     if (user) {
       await fetchAuthUserInsertOrUpdate({
         uid: user.uid,
-        name: user.displayName,
+        name: user.displayName || '',
         email: user.email,
         email_verified: user.emailVerified,
       });
       setUser(user);
+      setConfigStore('user', user);
     } else {
       await fetchAuthUserSessionInsertLogout(configStore.user.uid);
       await fetchAuthUserDelete();
@@ -102,14 +106,7 @@ const App: Component = () => {
           <div
             class="flex items-center"
           >
-            <li
-              class="py-2 px-4"
-            >
-                { 
-                <Link href="/payments" class="no-underline hover:underline">
-                  Paymentshome
-                </Link> }
-              </li>
+            
             {/* Andrew's code start. */}
             { configStore.userStaffType==="Admin" || configStore.userStaffType==="SysAdmin" ? (
                 <>
@@ -139,6 +136,14 @@ const App: Component = () => {
               ) :
               configStore.user ? (
                 <>
+                  <li
+                  class="py-2 px-4"
+                >
+                    
+                    <Link href="/payments" class="no-underline hover:underline">
+                      Paymentshome
+                    </Link> 
+                  </li>
                   <Link href="/ordermanagement" class="px-4 py-2">
                     <span class="flex items-center">
                       <span class="mr-1 no-underline hover:underline">Order Management</span>

@@ -33,7 +33,7 @@ export const PaymentsmoduleInitDb = () => {
   `);
 
   db.exec(`
-    INSERT INTO payments (paymentid, orderid, paymentmethod, creditcarddetails, amount, date)
+    INSERT OR REPLACE INTO payments (paymentid, orderid, paymentmethod, creditcarddetails, amount, date)
     VALUES 
     ('PAYID1', 'ORDID1', 'Visa', 1234567890123456, 100, 10032023),
     ('PAYID2', 'ORDID2', 'Mastercard', 2345678901234567, 150, 31032023),
@@ -44,16 +44,16 @@ export const PaymentsmoduleInitDb = () => {
     ('PAYID7', 'ORDID7', 'American Express', 7890123456789012, 400, 16022023),
     ('PAYID8', 'ORDID8', 'Discover', 8901234567890123, 450, 17032023),
     ('PAYID9', 'ORDID9', 'Visa', 9012345678901234, 500, 20032023),
-    ('PAYID10', 'ORDID10', 'Mastercard', 1234567890123456, 550, 02032023),
-    ('PAYID11', 'ORDID11', 'American Express', 2345678901234567, 600, 01032023),
-    ('PAYID12', 'ORDID12', 'Discover', 3456789012345678, 650, 30032023),
-    ('PAYID13', 'ORDID13', 'Visa', 4567890123456789, 700, 23052023),
-    ('PAYID14', 'ORDID14', 'Mastercard', 5678901234567890, 750, 27022023),
-    ('PAYID15', 'ORDID15', 'American Express', 6789012345678901, 800, 27032023),
-    ('PAYID16', 'ORDID16', 'Discover', 7890123456789012, 850, 15012023),
-    ('PAYID17', 'ORDID17', 'Visa', 8901234567890123, 900, 09052023),
-    ('PAYID18', 'ORDID18', 'Mastercard', 9012345678901234, 950, 07022023),
-    ('PAYID19', 'ORDID19', 'American Express', 1234567890123456, 1000, 03032023),
-    ('PAYID20', 'ORDID20', 'Discover', 2345678901234567, 1050, 02022023);
+    ('PAYID10', 'ORDID10', 'Mastercard', 1234537890123456, 550, 02032023),
+    ('PAYID11', 'ORDID11', 'American Express', 2343678901234567, 600, 01032023),
+    ('PAYID12', 'ORDID12', 'Discover', 3456789014345678, 650, 30032023),
+    ('PAYID13', 'ORDID13', 'Visa', 4567890123556789, 700, 23052023),
+    ('PAYID14', 'ORDID14', 'Mastercard', 5678901234567870, 750, 27022023),
+    ('PAYID15', 'ORDID15', 'American Express', 6729012345678901, 800, 27032023),
+    ('PAYID16', 'ORDID16', 'Discover', 7890125456789012, 850, 15012023),
+    ('PAYID17', 'ORDID17', 'Visa', 8901234767890123, 900, 09052023),
+    ('PAYID18', 'ORDID18', 'Mastercard', 9012345678201234, 950, 07022023),
+    ('PAYID19', 'ORDID19', 'American Express', 1234367890123456, 1000, 03032023),
+    ('PAYID20', 'ORDID20', 'Discover', 2345678931234567, 1050, 02022023);
   `);
 }

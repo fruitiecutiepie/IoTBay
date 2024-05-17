@@ -1,4 +1,4 @@
-import { Show, onMount } from 'solid-js';
+import { Show, createEffect, onMount } from 'solid-js';
 import { User } from '../../dataTypes';
 import { createStore } from 'solid-js/store';
 import { fetchAuthUserGet } from '../serviceAuth/authUser';
@@ -20,6 +20,12 @@ export default function Home () {
     const user = await fetchAuthUserGet();
     setConfigStore('user', user);
   });
+
+  createEffect(async () => {
+    const user = await fetchAuthUserGet();
+    setConfigStore('user', user);
+  })
+
   return (
     
     <div

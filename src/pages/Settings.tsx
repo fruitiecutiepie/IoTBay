@@ -1,11 +1,11 @@
 import { deleteUser, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { createStore } from "solid-js/store";
 import { A, useNavigate } from '@solidjs/router';
-import { For, onMount } from 'solid-js';
+import { createEffect, For, onMount } from 'solid-js';
 
 import { userSignal } from '../common/userSignal';
 import { User, UserSession } from '../../dataTypes';
-import { fetchAuthUserGet } from '../serviceAuth/authUser';
+import { fetchAuthUserGet, fetchAuthUserInsertOrUpdate } from '../serviceAuth/authUser';
 import { fetchAuthUserSessionGet } from '../serviceAuth/authUserSession';
 
 type SettingsStore = {
@@ -30,8 +30,17 @@ export default function Settings() {
     updateProfile(userSignal(), {
       displayName: configStore.user.name,
     })
-    .then(() => {
+    .then(async () => {
       alert("Profile updated")
+
+      await fetchAuthUserInsertOrUpdate({
+        uid: configStore.user.uid,
+        name: configStore.user.name || '',
+        email: configStore.user.email,
+        email_verified: userSignal().emailVerified,
+      });
+      const user = await fetchAuthUserGet();
+      setConfigStore('user', user);
     })
     .catch((err) => {
       console.error(err)
@@ -87,6 +96,10 @@ export default function Settings() {
     fetchUserSessions(configStore.user.uid);
   });
 
+  createEffect(() => {
+    console.log(configStore.user);
+  })
+
   return (
     <div
       class="flex flex-col items-center justify-center"
@@ -117,7 +130,7 @@ export default function Settings() {
                 type="text"
                 class="border border-gray-300 rounded-md w-full px-2"
                 value={configStore.user && configStore.user.name}
-                onInput={(e) => setConfigStore(prev => ({ ...prev, name: e.currentTarget.value }))}
+                onInput={(e) => setConfigStore("user", "name", e.currentTarget.value)}
               />
             </label>
             <label
@@ -132,7 +145,7 @@ export default function Settings() {
                 type="email"
                 class="border border-gray-300 rounded-md w-full px-2"
                 value={configStore.user && configStore.user.email}
-                onInput={(e) => setConfigStore(prev => ({ ...prev, email: e.currentTarget.value }))}
+                onInput={(e) => setConfigStore("user", "email", e.currentTarget.value)}
                 disabled
               />
             </label>

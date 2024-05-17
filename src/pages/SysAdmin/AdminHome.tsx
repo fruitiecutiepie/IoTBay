@@ -88,7 +88,7 @@ export default function AdminHome() {
 
     // Stores the user's administrator status.
     if (isAdmin) {
-      setConfigStore('userStaffType', "Admin");
+      setConfigStore('userStaffType', "SysAdmin");
     }
     if (isSysAdmin) {
       setConfigStore('userStaffType', "SysAdmin");
@@ -536,7 +536,7 @@ export default function AdminHome() {
           </>
         ) :
         configStore.userStaffType==="Admin" ? (
-          <></>
+          <><h1>Test</h1></>
         ) :
         configStore.userStaffType==="User" ? (
           <div class="flex flex-col justify-center items-center w-full">
