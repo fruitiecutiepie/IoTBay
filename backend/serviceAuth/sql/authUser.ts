@@ -4,17 +4,17 @@ export type User = {
   uid: string;
   name: string;
   email: string;
-  email_verified: boolean;
+  email_verified: number;
 }
 
-export const authUserGet = (): User => {
+export const authUserGet = (): User | undefined => {
   const query = db.query(
     `SELECT * FROM user;`
   );
-  return query.get() as User;
+  return query.get() as User | undefined;
 }
 
-export const authUserInsertOrUpdate = (user: User): User => {
+export const authUserInsertOrUpdate = (user: User): undefined => {
   const query = db.query(
     `INSERT OR REPLACE INTO user (
       uid,
@@ -25,12 +25,12 @@ export const authUserInsertOrUpdate = (user: User): User => {
       $uid, $name, $email, $email_verified
     );`
   );
-  return query.get({
+  query.run({
     $uid: user.uid,
     $name: user.name,
     $email: user.email,
     $email_verified: user.email_verified,
-  }) as User;
+  });
 }
 
 export const authUserDelete = (): void => {

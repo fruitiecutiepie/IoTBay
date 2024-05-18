@@ -16,7 +16,7 @@ export const authUserSessionGet = (uid: string): UserSession[] => {
   return query.all({ $uid: uid }) as UserSession[];
 }
 
-export const authUserSessionInsertLogin = (uid: string): UserSession[] => {
+export const authUserSessionInsertLogin = (uid: string): void => {
   const id = nanoid();
   const query = db.query(
     `INSERT INTO user_session (
@@ -27,10 +27,10 @@ export const authUserSessionInsertLogin = (uid: string): UserSession[] => {
       $uid, $id, $login_at
     );`
   );
-  return query.all({ $uid: uid, $id: id, $login_at: Date.now() }) as UserSession[];
+  query.run({ $uid: uid, $id: id, $login_at: Date.now() });
 }
 
-export const authUserSessionInsertLogout = (uid: string): UserSession[] | void => {
+export const authUserSessionInsertLogout = (uid: string): void => {
   const lastLoginSession = db.query(
     `SELECT * FROM user_session 
     WHERE uid = $uid 
@@ -47,6 +47,5 @@ export const authUserSessionInsertLogout = (uid: string): UserSession[] | void =
     SET logout_at = $logout_at 
     WHERE id = $id;`
   );
-
-  return query.all({ $id: lastLoginSession.id, $logout_at: Date.now() }) as UserSession[];
+  query.run({ $id: lastLoginSession.id, $logout_at: Date.now() });
 }

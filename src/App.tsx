@@ -5,7 +5,7 @@ import { routes } from './routes';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { setUser } from './common/userSignal';
 import { auth } from './common/firebaseClientInit';
-import { fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession';
+import { fetchAuthUserSessionInsertLogin, fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession';
 import { fetchAuthUserDelete, fetchAuthUserGet, fetchAuthUserInsertOrUpdate } from './serviceAuth/authUser';
 import { User } from '../dataTypes';
 import { createStore } from 'solid-js/store';
@@ -39,10 +39,11 @@ const App: Component = () => {
     if (user) {
       await fetchAuthUserInsertOrUpdate({
         uid: user.uid,
-        name: user.displayName,
+        name: user.displayName || '',
         email: user.email,
         email_verified: user.emailVerified,
       });
+      await fetchAuthUserSessionInsertLogin(user.uid);
       setUser(user);
     } else {
       await fetchAuthUserSessionInsertLogout(configStore.user.uid);
@@ -53,7 +54,9 @@ const App: Component = () => {
 
   onMount(async () => {
     const user = await fetchAuthUserGet();
-    setConfigStore('user', user);
+    if (user) {
+      setConfigStore('user', user);
+    }
   });
 
   onCleanup(() => {

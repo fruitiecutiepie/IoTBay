@@ -16,7 +16,9 @@ export default function Welcome() {
 
   onMount(async () => {
     const user = await fetchAuthUserGet();
-    setConfigStore('user', user);
+    if (user) {
+      setConfigStore('user', user);
+    }
   });
 
   return (

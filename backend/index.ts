@@ -1,6 +1,6 @@
 import { Server, serve } from "bun";
 
-import { initDb } from "./db/initDb";
+import { db, initDb } from "./db/initDb";
 import { authFetchHandler } from "./serviceAuth/authFetchHandler";
 
 const SERVER_PORT = 46822;
@@ -16,7 +16,7 @@ const fetchHandlers: FetchHandler = {
 };
 
 (() => {
-  initDb();
+  initDb(db);
   serve({
     port: SERVER_PORT,
     fetch: async (req: Request, server: Server) => {

@@ -11,6 +11,9 @@ export const authInitDb = () => {
     );`
   );
   db.exec(
+    `DELETE FROM user;`
+  );
+  db.exec(
     `CREATE TABLE IF NOT EXISTS user_session (
       uid TEXT NOT NULL,
 
@@ -22,7 +25,7 @@ export const authInitDb = () => {
   )
   // Insert some dummy data
   db.exec(
-    `INSERT INTO user_session (
+    `INSERT OR REPLACE INTO user_session (
       uid, id, login_at, logout_at
     ) VALUES 
       ('1', '1', 1620000000, 1620000000),
