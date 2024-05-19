@@ -5,7 +5,7 @@ type ReqBody = {
   user: User | undefined;
 }
 
-export const fetchAuthUserGet = async (): Promise<User> => {
+export const fetchAuthUserGet = async (): Promise<User | void> => {
   const res = await fetch(`http://localhost:${config.serverPort}/auth/user`);
   return await res.json();
 }

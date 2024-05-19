@@ -344,7 +344,7 @@ export default function AdminHome() {
                       disabled={selectedCustomer() === undefined} onClick={startUpdateUser}>Update User</button>
                     <button class={`flex-1 mx-2 text-sm font-semibold text-yellow-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-yellow-800'} shadow`}
                       disabled={selectedCustomer() === undefined} onClick={promoteStaff}>Promote User</button>
-                    {configStore.inactiveCustomers.find((u) => u === selectedCustomer().uid) ? // If // Change which button is shown depending on the active/inactive status of the customer
+                    {configStore.inactiveCustomers.find((u) => u === selectedCustomer()?.uid) ? // If // Change which button is shown depending on the active/inactive status of the customer
                       (
                         <button class={`flex-1 mx-2 text-sm font-semibold text-green-600 py-2 px-4 rounded-lg ${selectedCustomer() === undefined ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-200 hover:text-green-800'} shadow`}
                           disabled={selectedCustomer() === undefined} onClick={activateUser}>Activate User</button>

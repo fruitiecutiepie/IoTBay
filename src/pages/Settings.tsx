@@ -91,7 +91,9 @@ export default function Settings() {
 
   onMount(async () => {
     const user = await fetchAuthUserGet();
-    setConfigStore('user', user);
+    if (user) {
+      setConfigStore('user', user);
+    }
 
     fetchUserSessions(configStore.user.uid);
   });

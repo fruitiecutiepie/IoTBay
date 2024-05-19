@@ -1,8 +1,8 @@
 import { A } from "@solidjs/router";
 import { useNavigate } from '@solidjs/router';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
-import { auth } from '../common/firebaseClientInit'
 
+import { auth } from '../common/firebaseClientInit'
 import useFormStore from "../common/useFormStore";
 import { fetchAuthUserSessionInsertLogin } from "../serviceAuth/authUserSession";
 import { fetchAddUserNumber } from "../serviceAdmin/userNumber";
@@ -20,8 +20,6 @@ export default function SignUp() {
     createUserWithEmailAndPassword(auth, formStore.fields.email, formStore.fields.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
-        
-        await fetchAuthUserSessionInsertLogin(user.uid);
         updateProfile(user, {
           displayName: formStore.fields.name,
         });

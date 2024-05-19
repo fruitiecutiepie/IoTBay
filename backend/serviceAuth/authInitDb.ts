@@ -11,6 +11,9 @@ export const authInitDb = () => {
     );`
   );
   db.exec(
+    `DELETE FROM user;`
+  );
+  db.exec(
     `CREATE TABLE IF NOT EXISTS user_session (
       uid TEXT NOT NULL,
 

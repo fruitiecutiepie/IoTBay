@@ -5,7 +5,7 @@ import { routes } from './routes';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { setUser, userSignal } from './common/userSignal';
 import { auth } from './common/firebaseClientInit';
-import { fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession';
+import { fetchAuthUserSessionInsertLogin, fetchAuthUserSessionInsertLogout } from './serviceAuth/authUserSession';
 import { fetchAuthUserDelete, fetchAuthUserGet, fetchAuthUserInsertOrUpdate } from './serviceAuth/authUser';
 import { User } from '../dataTypes';
 import { createStore } from 'solid-js/store';
@@ -49,6 +49,7 @@ const App: Component = () => {
         email: user.email,
         email_verified: user.emailVerified,
       });
+      await fetchAuthUserSessionInsertLogin(user.uid);
       setUser(user);
       setConfigStore('user', user);
     } else {
@@ -60,14 +61,16 @@ const App: Component = () => {
 
   onMount(async () => {
     const user = await fetchAuthUserGet();
-    setConfigStore('user', user);
+    if (user) {
+      setConfigStore('user', user);
+    }
 
     // Andrew's code start.
     const isAdmin = await fetchStaffUIDAuth(configStore.user.uid, "Admin");
     const isSysAdmin = await fetchStaffUIDAuth(configStore.user.uid, "SysAdmin");
 
     if (isAdmin) {
-      setConfigStore('userStaffType', "Admin");
+      setConfigStore('userStaffType', "SysAdmin");
     }
     if (isSysAdmin) {
       setConfigStore('userStaffType', "SysAdmin");

@@ -1,6 +1,6 @@
 import { Server, serve } from "bun";
 
-import { initDb } from "./db/initDb";
+import { db, initDb } from "./db/initDb";
 import { authFetchHandler } from "./serviceAuth/authFetchHandler";
 import { staffFetchHandler } from "./serviceAdmin/staffFetchHandler";
 import { customerManagementFetchHandler } from "./serviceCustomerManagement/customerManagementFetchHandler";
@@ -25,7 +25,7 @@ const fetchHandlers: FetchHandler = {
 
 
 (() => {
-  initDb();
+  initDb(db);
   serve({
     port: SERVER_PORT,
     fetch: async (req: Request, server: Server) => {

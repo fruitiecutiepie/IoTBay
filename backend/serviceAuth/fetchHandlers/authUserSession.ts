@@ -26,10 +26,23 @@ export const authUserSessionFetchHandler: FetchHandler = {
     POST: async (req: Request, headers: Headers) => {
       const reqBody = await req.json() as ReqBody;
       const uid = reqBody.uid;
+      if (!uid) {
+        console.error(`/auth/user_sessions: uid is required`);
+        return Promise.resolve(
+          new Response(undefined, { status: 400, headers })
+        )
+      }
+      const event = reqBody.event;
+      if (event !== "login" && event !== "logout") {
+        console.error(`/auth/user_sessions: event must be "login" or "logout"`);
+        return Promise.resolve(
+          new Response(undefined, { status: 400, headers })
+        )
+      }
       
-      if (reqBody.event === "login") {
+      if (event === "login") {
         authUserSessionInsertLogin(uid);
-      } else if (reqBody.event === "logout") {
+      } else if (event === "logout") {
         authUserSessionInsertLogout(uid);
       }
 
